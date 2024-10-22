@@ -14,7 +14,6 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 //generating random id's
-
 let getRandomUser = () => {
     return [
     faker.string.uuid(),
@@ -54,7 +53,7 @@ app.post("/register", (req, res) => {
         connection.query(q, [data], (err, result) =>{
             if(err) throw err;
         
-            res.send(result);
+            res.send("added successfully");
         });
         }
         catch(err){
