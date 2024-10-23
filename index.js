@@ -10,6 +10,8 @@ app.listen(port, ()=>{
     console.log("listening to the port " +port);
 });
 
+app.use(express.static("public"));
+
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
@@ -28,21 +30,20 @@ const connection = mysql.createConnection({
     password: 'Ad2142004',
 });
 
-
 app.get("/", (req, res) =>{
-    res.render("register.ejs");
+    res.render("register-hod.ejs");
 
 });
 
 app.use(express.urlencoded({extended: true}));
 
 //register 
-app.post("/register", (req, res) => {
-    let {user} = req.query;
-    let q = `INSERT INTO ${user} (id, name, email, password, department ) VALUES(?)`;
+
+app.post("/register/hod", (req, res) => {
+
+    let q = `INSERT INTO hod (id, name, email, password, department ) VALUES(?)`;
     let id = getRandomUser();
     id = id[0];
-    console.log(id);
     let {username, department, email, password, confirmPassword} = req.body;
 
     let data = [id, username, email, password, department];
