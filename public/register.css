@@ -67,6 +67,22 @@ input{
     font-size: 14px;
 }
 
+select{
+    height: 100%;
+    width: 10rem;
+    margin-left: 20px;
+    border: 0px;
+    outline: 0px;
+    font-size: 14px;
+    
+}
+
+option{
+    transition-duration: 2s;
+    transition-timing-function: linear;
+    height: 20px;
+}
+
 .btn{
     height: 2rem;
     width: 20rem;
@@ -91,4 +107,5 @@ input{
     color: rgba(0, 0, 0, 0.471);
     text-align: center;
 }
+
 

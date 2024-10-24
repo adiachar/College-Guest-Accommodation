@@ -30,25 +30,37 @@ const connection = mysql.createConnection({
     password: 'Ad2142004',
 });
 
-app.get("/", (req, res) =>{
-    res.render("register-hod.ejs");
-
+let user = "hod";
+app.get("/register", (req, res) =>{
+    res.render("register.ejs", {user});
 });
+
 
 app.use(express.urlencoded({extended: true}));
 
 //register 
 
-app.post("/register/hod", (req, res) => {
+app.post("/register", (req, res) => {
 
-    let q = `INSERT INTO hod (id, name, email, password, department ) VALUES(?)`;
+    let {user} = req.query;
     let id = getRandomUser();
     id = id[0];
-    let {username, department, email, password, confirmPassword} = req.body;
+    let data = [];
+    let a ={};
+    let q = "";
+    if( user == "hod"){
+        q = `INSERT INTO hod (id, name, email, password, department ) VALUES(?)`;
+        a = {username, department, email, password, confirmPassword} = req.body;
+        data = [id, a.username, a.email, a.password, a.department];
+    }
 
-    let data = [id, username, email, password, department];
+    if( user == "principal" ){
+        q = `INSERT INTO principal (id, name, email, password, college ) VALUES(?)`;
+        a = {username, college, email, password, confirmPassword} = req.body;
+        data = [id, a.username, a.email, a.password, a.college];
+    }
 
-    if(password == confirmPassword){
+    if(a.password == a.confirmPassword){
 
     try{
         connection.query(q, [data], (err, result) =>{

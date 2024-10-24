@@ -12,7 +12,7 @@
     <div class="container">
         
         <span class="title">Register</span>
-        <form action="/register/hod?user=hod" method="post" id="form">
+        <form action="/register?user=<%= user %>" method="post" id="form">
 
             <div class="input-container">
 
@@ -22,10 +22,29 @@
                 </div>
 
                 <div class="input-field">
-                    <i class="fa-solid fa-building-columns"></i>
-                    <input type="text" placeholder="Enter Department" required id="department" name="department">
-                </div>
+                    
+                    <% if(user == "hod") { %>
 
+                        <i class="fa-solid fa-building-columns"></i>
+                        <select name="department" id="department">
+                            <option value="ISE">Information Science </option>
+                            <option value="CSE">Computer Science </option>
+                            <option value="EC">Electrical </option>
+                            <option value="AI">Artificial Inteligence</option>
+                        </select>
+
+                    <% } %>
+
+                    <% if(user == "principal") { %>
+
+                        <i class="fa-solid fa-building-columns"></i>
+                        <select name="college" id="department">
+                            <option value="mite">Mangalore Institute Of Technology and Engineering </option>
+                        </select>
+
+                    <% } %>
+                </div>
+         
                 <div class="input-field">
                     <i class="fa-solid fa-envelope"></i>
                     <input type="text" placeholder="Enter Your Email" required id="email" name="email">

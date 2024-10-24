@@ -1,3 +1,5 @@
+const { CssFunction } = require("@faker-js/faker");
+
 let button = document.querySelector("button");
 
 button.addEventListener("click", () =>{
@@ -19,6 +21,4 @@ button.addEventListener("click", () =>{
     else if(username.value && department.value && email.value){
         document.getElementById("form").submit();
     }
-
-    
 });
