@@ -10,10 +10,12 @@ app.listen(port, ()=>{
     console.log("listening to the port " +port);
 });
 
+app.use(express.urlencoded({extended: true}));
 app.use(express.static("public"));
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
+
 
 //generating random id's
 let getRandomUser = () => {
@@ -21,6 +23,7 @@ let getRandomUser = () => {
     faker.string.uuid(),
     ];
   }
+
 
 // connection to the database
 const connection = mysql.createConnection({
@@ -30,16 +33,15 @@ const connection = mysql.createConnection({
     password: 'Ad2142004',
 });
 
+
+//register web page
 let user = "hod";
 app.get("/register", (req, res) =>{
     res.render("register.ejs", {user});
 });
 
 
-app.use(express.urlencoded({extended: true}));
-
-//register 
-
+//register post request
 app.post("/register", (req, res) => {
 
     let {user} = req.query;
@@ -78,4 +80,43 @@ app.post("/register", (req, res) => {
     }
 });
 
+
+//login web page
+app.get("/login", (req, res) =>{
+    res.render("login.ejs");
+});
+
+//login post request
+app.post("/login", (req, res) => {
+    let {email, password} = req.body;
+    let user = "";
+    let qhod = `SELECT * FROM hod WHERE email = '${email}' AND password = '${password}'`;
+
+    try{
+        connection.query(qhod, (err, result) => {
+            if(err) throw err;
+            user = "hod";
+            res.send(user);
+        });
+    }
+    catch(err){
+        console.log("not hod");
+    }
+
+    let qprincipal = `SELECT * FROM principal WHERE email = '${email}' AND password = '${password}'`;
+
+    try{
+        connection.query(qprincipal, (err, result) => {
+            if(err) throw err;
+            
+            user = "principal";
+            res.send(user);
+        });
+    }
+    catch(err){
+        console.log("not principal")
+    }
+    
+
+});
 

@@ -1,5 +1,3 @@
-const { CssFunction } = require("@faker-js/faker");
-
 let button = document.querySelector("button");
 
 button.addEventListener("click", () =>{
