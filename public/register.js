@@ -5,7 +5,6 @@ button.addEventListener("click", () =>{
     let conPassword = document.getElementById("confirmPassword");
     let username = document.getElementById("username");
     let department = document.getElementById("department");
-    let email = document.getElementById("email");
 
     if(password.value != conPassword.value)
     {   

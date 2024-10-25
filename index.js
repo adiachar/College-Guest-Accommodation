@@ -51,15 +51,15 @@ app.post("/register", (req, res) => {
     let a ={};
     let q = "";
     if( user == "hod"){
-        q = `INSERT INTO hod (id, name, email, password, department ) VALUES(?)`;
-        a = {username, department, email, password, confirmPassword} = req.body;
-        data = [id, a.username, a.email, a.password, a.department];
+        q = `INSERT INTO hod (id, name, password, department ) VALUES(?)`;
+        a = {username, department, password, confirmPassword} = req.body;
+        data = [id, a.username, a.password, a.department];
     }
 
     if( user == "principal" ){
-        q = `INSERT INTO principal (id, name, email, password, college ) VALUES(?)`;
-        a = {username, college, email, password, confirmPassword} = req.body;
-        data = [id, a.username, a.email, a.password, a.college];
+        q = `INSERT INTO principal (id, name, password, college ) VALUES(?)`;
+        a = {username, college, password, confirmPassword} = req.body;
+        data = [id, a.username, a.password, a.college];
     }
 
     if(a.password == a.confirmPassword){
@@ -88,9 +88,9 @@ app.get("/login", (req, res) =>{
 
 //login post request
 app.post("/login", (req, res) => {
-    let {email, password} = req.body;
+    let {username, password} = req.body;
     let user = "";
-    let qhod = `SELECT * FROM hod WHERE email = '${email}' AND password = '${password}'`;
+    let qhod = `SELECT * FROM hod WHERE username = '${username}' AND password = '${password}'`;
 
     try{
         connection.query(qhod, (err, result) => {
@@ -103,7 +103,7 @@ app.post("/login", (req, res) => {
         console.log("not hod");
     }
 
-    let qprincipal = `SELECT * FROM principal WHERE email = '${email}' AND password = '${password}'`;
+    let qprincipal = `SELECT * FROM principal WHERE username = '${username}' AND password = '${password}'`;
 
     try{
         connection.query(qprincipal, (err, result) => {
