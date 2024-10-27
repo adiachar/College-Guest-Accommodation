@@ -35,7 +35,7 @@ const connection = mysql.createConnection({
 
 
 //register web page
-let user = "hod";
+let user = "coordinator";
 app.get("/register", (req, res) =>{
     res.render("register.ejs", {user});
 });
@@ -62,18 +62,21 @@ app.post("/register", (req, res) => {
         data = [id, a.username, a.password, a.college];
     }
 
-    if(a.password == a.confirmPassword){
+    if( user == "coordinator"){
+        q = `INSERT INTO coordinator (id, name, password, department ) VALUES(?)`;
+        a = {username, department, password, confirmPassword} = req.body;
+        data = [id, a.username, a.password, a.department];
+    }
 
-    try{
+    if(a.password == a.confirmPassword){
         connection.query(q, [data], (err, result) =>{
-            if(err) throw err;
-        
+            if(err){
+                res.send("some error in the database");
+            }
+            else{
             res.send("added successfully");
+            }
         });
-        }
-        catch(err){
-            console.log(err);
-        }
     }
     else{
         res.send("check your password");
@@ -86,37 +89,46 @@ app.get("/login", (req, res) =>{
     res.render("login.ejs");
 });
 
+
 //login post request
 app.post("/login", (req, res) => {
     let {username, password} = req.body;
-    let user = "";
-    let qhod = `SELECT * FROM hod WHERE username = '${username}' AND password = '${password}'`;
-
-    try{
-        connection.query(qhod, (err, result) => {
-            if(err) throw err;
-            user = "hod";
-            res.send(user);
-        });
-    }
-    catch(err){
-        console.log("not hod");
-    }
-
-    let qprincipal = `SELECT * FROM principal WHERE username = '${username}' AND password = '${password}'`;
-
-    try{
-        connection.query(qprincipal, (err, result) => {
-            if(err) throw err;
-            
-            user = "principal";
-            res.send(user);
-        });
-    }
-    catch(err){
-        console.log("not principal")
-    }
-    
-
+    let qhod = `SELECT * FROM hod WHERE name = '${username}' AND password = '${password}'`;
+    connection.query(qhod, (err, result) =>{
+        if(err){
+            res.send("some error in database");
+        }
+        else if( result.length > 0)
+        {   
+            let user = result[0];
+            res.render("hod.ejs", {user});
+        }
+        else{
+            let qprincipal = `SELECT * FROM principal WHERE name = '${username}' AND password = '${password}'`;
+            connection.query(qprincipal, (err, result) => {
+                if(err){
+                    res.send("some error in the database");
+                }
+                else if(result.length > 0){
+                    res.send("user is principal");
+                }
+                else{
+                    let qcoordinator = `SELECT * FROM coordinator WHERE name = '${username}' AND password = '${password}'`;
+                    connection.query(qcoordinator, (err, result) => {
+                        if(err){
+                            res.send("some error in the database");
+                        }
+                        else if(result.length > 0){
+                            let user = result[0];
+                            res.render("coordinator.ejs", {user});
+                        }
+                        else{
+                            res.render("login.ejs");
+                        }
+                    });
+                }
+            });
+        }
+    });
+        
 });
-
