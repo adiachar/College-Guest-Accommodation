@@ -12,18 +12,18 @@
     <div class="container">
         
         <span class="title">Register</span>
-        <form action="/register?user=<%= user %>" method="post" id="form">
+        <form action="/register?user_type=<%= user_type %>" method="post" id="form">
 
             <div class="input-container">
 
                 <div class="input-field">
                     <i class="fa-solid fa-user"></i>
-                    <input type="text" placeholder="Enter Your Name" required id="username" name="username">
+                    <input type="text" placeholder="Enter Your Name" required id="name" name="name">
                 </div>
 
                 <div class="input-field">
                     
-                    <% if(user == "hod" || user == "coordinator") { %>
+                    <% if(user_type == "hod" || user_type == "coordinator") { %>
 
                         <i class="fa-solid fa-building-columns"></i>
                         <select name="department" id="department">
@@ -35,7 +35,7 @@
 
                     <% } %>
 
-                    <% if(user == "principal") { %>
+                    <% if(user_type == "principal") { %>
 
                         <i class="fa-solid fa-building-columns"></i>
                         <select name="college" id="department">
@@ -43,6 +43,15 @@
                         </select>
 
                     <% } %>
+
+                    <% if(user_type == "wardon") { %>
+
+                        <i class="fa-solid fa-building-columns"></i>
+                        <select name="hostel" id="department">
+                            <option value="mite">mite hostel</option>
+                        </select>
+                    <% } %>
+
                 </div>
 
                 <div class="input-field">
@@ -58,7 +67,6 @@
             </div>
             <button class="btn" type="submit">Register</button>
         </form>
-        
         <p id="pass-check">help improve our webpage by <a href="feedback">giving Feedback</a></p>
         
     </div>

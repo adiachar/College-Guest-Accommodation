@@ -1,6 +1,7 @@
 const express = require("express");
 const mysql = require("mysql2");
 const path = require("path");
+const ejsMate = require("ejs-mate");
 const { faker } = require("@faker-js/faker");
 
 const app = express();
@@ -12,9 +13,9 @@ app.listen(port, ()=>{
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.static("public"));
-
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
+app.engine("ejs", ejsMate);
 
 
 //generating random id's
@@ -35,51 +36,30 @@ const connection = mysql.createConnection({
 
 
 //register web page
-let user = "coordinator";
+
 app.get("/register", (req, res) =>{
-    res.render("register.ejs", {user});
+    let { user_type } = req.query;
+    res.render("register.ejs", {user_type});
 });
 
 
 //register post request
 app.post("/register", (req, res) => {
-
-    let {user} = req.query;
+    let {user_type} = req.query;
     let id = getRandomUser();
     id = id[0];
-    let data = [];
-    let a ={};
-    let q = "";
-    if( user == "hod"){
-        q = `INSERT INTO hod (id, name, password, department ) VALUES(?)`;
-        a = {username, department, password, confirmPassword} = req.body;
-        data = [id, a.username, a.password, a.department];
-    }
-
-    if( user == "principal" ){
-        q = `INSERT INTO principal (id, name, password, college ) VALUES(?)`;
-        a = {username, college, password, confirmPassword} = req.body;
-        data = [id, a.username, a.password, a.college];
-    }
-
-    if( user == "coordinator"){
-        q = `INSERT INTO coordinator (id, name, password, department ) VALUES(?)`;
-        a = {username, department, password, confirmPassword} = req.body;
-        data = [id, a.username, a.password, a.department];
-    }
-
+    let a ={name, department, password, confirmPassword} = req.body;
+    let data = [id, a.name, user_type, a.department, a.password];
+    let q = `INSERT INTO user (id, name, user_type, department, password ) VALUES(?)`;
     if(a.password == a.confirmPassword){
         connection.query(q, [data], (err, result) =>{
             if(err){
-                res.send("some error in the database");
+                res.send(err);
             }
             else{
-            res.send("added successfully");
+            res.redirect(`/home/${id}`);
             }
         });
-    }
-    else{
-        res.send("check your password");
     }
 });
 
@@ -92,43 +72,36 @@ app.get("/login", (req, res) =>{
 
 //login post request
 app.post("/login", (req, res) => {
-    let {username, password} = req.body;
-    let qhod = `SELECT * FROM hod WHERE name = '${username}' AND password = '${password}'`;
-    connection.query(qhod, (err, result) =>{
+    let {name, password} = req.body;
+    let q = `SELECT * FROM user WHERE name = '${name}' AND password = '${password}'`;
+    connection.query(q, (err, result) =>{
         if(err){
             res.send("some error in database");
         }
         else if( result.length > 0)
-        {   
+        {
             let user = result[0];
-            res.render("hod.ejs", {user});
+            res.render("home.ejs", {user});
         }
         else{
-            let qprincipal = `SELECT * FROM principal WHERE name = '${username}' AND password = '${password}'`;
-            connection.query(qprincipal, (err, result) => {
-                if(err){
-                    res.send("some error in the database");
-                }
-                else if(result.length > 0){
-                    res.send("user is principal");
-                }
-                else{
-                    let qcoordinator = `SELECT * FROM coordinator WHERE name = '${username}' AND password = '${password}'`;
-                    connection.query(qcoordinator, (err, result) => {
-                        if(err){
-                            res.send("some error in the database");
-                        }
-                        else if(result.length > 0){
-                            let user = result[0];
-                            res.render("coordinator.ejs", {user});
-                        }
-                        else{
-                            res.render("login.ejs");
-                        }
-                    });
-                }
-            });
+            res.send("user not found");
+        }
+    });  
+});
+
+
+// get home
+app.get("/home/:id", (req, res) =>{
+    let {id} = req.params;
+    q = `SELECT * FROM user WHERE id = '${id}'`;
+    connection.query(q, (err, result) =>{
+        if(err)
+        {
+            console.log(err);
+        }
+        else{
+            let user = result[0];
+            res.render("home.ejs", {user});
         }
     });
-        
 });

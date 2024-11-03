@@ -3,7 +3,7 @@ let button = document.querySelector("button");
 button.addEventListener("click", () =>{
     let password = document.getElementById("password");
     let conPassword = document.getElementById("confirmPassword");
-    let username = document.getElementById("username");
+    let username = document.getElementById("name");
     let department = document.getElementById("department");
 
     if(password.value != conPassword.value)
