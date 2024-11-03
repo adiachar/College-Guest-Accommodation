@@ -105,3 +105,20 @@ app.get("/home/:id", (req, res) =>{
         }
     });
 });
+
+// get account
+app.get("/home/account/:id", (req, res) =>{
+    let {id} = req.params;
+    q = `SELECT * FROM user WHERE id = '${id}'`;
+    connection.query(q, (err, result) =>{
+        if(err){
+            console.log(err);
+        }
+        else if(result.length > 0)
+        {   
+            user = result[0];
+            res.render("account.ejs", {user});
+        }
+    });
+});
+    
