@@ -2,5 +2,81 @@
 <% layout("/layouts/boilerplate.ejs") %>
 
 <body>
- 
+
+    <!-- request for createRequest -->
+    <% if(nav.createRequest) { %>
+        <div class="select-rqst">
+            <h1>Please Select the Request :</h1>
+            <a href="/guestRequest/<%= user.id %>">Create a Guest Accomodation Request</a>
+            <a href="/leaveRequest/<%= user.id %>">Make a Leave Request</a>
+            <a href="/otherRequest/<%= user.id %>">Make Other Requests</a>
+        </div>
+    <% } %>
+
+    <!-- request for account details -->
+    <% if(nav.showAccount) { %>
+    <div class="account">
+        <div class="account-icon">
+            <i class="fa-solid fa-circle-user"></i>
+        </div>
+        <div class="account-body">
+            <p class="account-text"> Name : <b><%= user.name %></b></p>
+            <p class="account-text">Working As : <b><%= user.user_type %></b></p>
+            <p class="account-text">Department : <b><%= user.department %></b></p>
+            <form action="#">
+                <button class="edit-btn">Edit Account</button>
+            </form>
+        </div>
+    </div>
+    <% } %>
+
+    <!-- guest request -->
+    <% if(nav.guestRequest) { %>
+        <div class="create-guest-rqst">
+            <form action="/guestRequest/<%= user.id %>" method ="post" class="rqst-form">
+        
+                <div class="input-field">
+                    <label for="title"><i class="fa-solid fa-t"></i></label>
+                    <input type="text" placeholder="Enter the Title" id="title" name="title" class="title input">
+                </div>
+                <div class="input-field">
+                    <label for="guestName noOfGuests"><i class="fa-solid fa-users"></i></label>
+                    <input type="number" placeholder="No. Guests" id="noOfGuests" name="numberOfGuests" class="no-of-guests input"/>
+                    <input type="text" placeholder="Enter Guest Name" id="guestName" name="guestName" class="guest-name input"/>
+                </div>
+                <div class="input-field"> 
+                    <label for="arrivalDate"><i class="fa-solid fa-calendar-days"></i></label>
+                    <p>Arrival Date : </p>
+                    <input type="date" placeholder="Enter Guest Arrival Date" id="arrivalDate" name="arrivalDate" class="date input"/>
+                    <p>Leaving Date : </p>
+                    <input type="date" placeholder="Enter Guest Leaving Date" id="leavingDate" name="leavingDate" class="date input"/>
+                    <p>Arrival Time : </p>
+                    <input type="time" placeholder="Enter Guest Arrival Time" id="arrivalTime" name="arrivalTime" class="time input"/>
+                </div>
+                <div class="input-field">
+                    <label for="subject"><i class="fa-solid fa-align-center"></i></label>
+                    <textarea name="reasonOfArrival" id="reasonOfArrival" placeholder="Please write the reson of arrival" class="reasonOfArrival input"></textarea>
+                </div>
+                <div class="input-field">
+                    <label for="hod" class="select-label"><i class="fa-solid fa-user-tie"></i></label>
+                    <select name="to_id" id="requestTo" class="select-input input">
+                        <% for(hod of hods){ %>
+                            <option value="<%= hod.id %>">Request to HOD <b><%= hod.name %></b> of <b><%= hod.department%></b> Department</option>
+                        <% } %>
+                    </select>
+                </div>
+                <button class="approval-btn">Get hod's Approval</button>
+            </form>
+        </div>
+    <% } %>
+
+    <% if(nav.showRequests) { %>
+        <div class="show-rqst-container">
+            <% for(request of nav.showRequestsData) { %>
+                <div class="show-rqst">
+                    <div class="title"></div>
+                </div>
+            <% } %>
+        </div>
+    <% } %>
 </body>
