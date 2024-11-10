@@ -33,7 +33,7 @@
     <!-- guest request -->
     <% if(nav.createGuestRequest) { %>
         <div class="create-guest-rqst">
-            <form action="/guestRequest/<%= user.id %>/<%= user.name %>/<%= user.user_type%>/<%= user.department %>" method ="post" class="rqst-form">
+            <form action="/guestRequest/<%= user.id %>" method ="post" class="rqst-form">
                 <div class="input-field">
                     <label for="guestName noOfGuests"><i class="fa-solid fa-users"></i></label>
                     <input type="number" placeholder="No. Guests" id="noOfGuests" name="numberOfGuests" class="no-of-guests input" required/>

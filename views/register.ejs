@@ -11,7 +11,7 @@
 <body>
     <div class="container">
         
-        <span class="title">Register</span>
+        <span class="title">Register - As <%= user_type.toString().toUpperCase() %></span>
         <form action="/register?user_type=<%= user_type %>" method="post" id="form">
 
             <div class="input-container">

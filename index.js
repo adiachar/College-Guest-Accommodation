@@ -3,11 +3,12 @@ const mysql = require("mysql2");
 const path = require("path");
 const ejsMate = require("ejs-mate");
 const { faker } = require("@faker-js/faker");
-const { homedir } = require("os");
+const ExpressError = require("./utility/ExpressError");
+const wrapAsync = require("./utility/wrapAsync");
+const query = require("./utility/allQuery");
 
 const app = express();
 const port = 8080;
-
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.static("public"));
@@ -55,59 +56,39 @@ let makeAllFalse = () =>{
 
 
 // get home
-app.get("/home/:id", (req, res) =>{
+app.get("/home/:id", wrapAsync( async (req, res) =>{
     let {id} = req.params;
-    let user = "";
-    userQuery = `SELECT * FROM user WHERE id = '${id}'`;
-    hodQuery = `SELECT * FROM user WHERE user_type = 'hod'`;
-    principalQuery = `SELECT * FROM user WHERE user_type = 'principal'`;
-    wardonQuery = `SELECT * FROM user WHERE user_type = 'warden'`;
-    connection.query(userQuery, (err, result) =>{
-        if(err)
-        {
-            console.log(err);
+    await query.getUserById(id)
+    .then((user) => {
+
+        if(user.user_type == 'coordinator'){
+            query.getUserByType('hod')
+            .then((reqTo) => {
+                res.render("home.ejs", {user, nav, reqTo});
+            })
+            .catch((err) => {throw err;})
         }
-        else{
-            user = result[0];
-            if(user.user_type == 'coordinator'){
-                connection.query(hodQuery, (err, result) =>{
-                    if(err)
-                    {
-                        console.log(err);
-                    }
-                    else{
-                        let reqTo = result;
-                        res.render("home.ejs", {user, nav, reqTo});
-                    }
-                });
-            }
-            else if(user.user_type == 'hod'){
-                connection.query(principalQuery, (err, result) =>{
-                    if(err)
-                    {
-                        console.log(err);
-                    }
-                    else{
-                        let reqTo = result;
-                        res.render("home.ejs", {user, nav, reqTo});
-                    }
-                });
-            }
-            else if(user.user_type == 'principal'){
-                connection.query(wardonQuery, (err, result) =>{
-                    if(err)
-                    {
-                        console.log(err);
-                    }
-                    else{
-                        let reqTo = result;
-                        res.render("home.ejs", {user, nav, reqTo});
-                    }
-                });
-            }   
+
+        else if(user.user_type == 'hod'){
+            query.getUserByType('principal')
+            .then((reqTo) =>{
+                res.render("home.ejs", {user, nav, reqTo});
+            })
+            .catch((err) =>{throw err});
         }
-    });
-});
+
+        else if(user.user_type == 'principal'){
+            query.getUserByType('wardon')
+            .then((reqTo) =>{
+                res.render("home.ejs", {user, nav, reqTo});
+            })
+            .catch((err) =>{throw err});
+        }
+
+    })
+    .catch( (rejected) =>{console.log(rejected)});
+    
+}));
 
 
 //register web page
@@ -118,7 +99,7 @@ app.get("/register", (req, res) =>{
 
 
 //register post request
-app.post("/register", (req, res) => {
+app.post("/register", wrapAsync ( (req, res) => {
     let {user_type} = req.query;
     let id = getRandomId();
     id = id[0];
@@ -128,7 +109,7 @@ app.post("/register", (req, res) => {
     if(password == confirmPassword){
         connection.query(q, [data], (err, result) =>{
             if(err){
-                res.send(err);
+                throw err;
             }
             else{
             makeAllFalse();
@@ -136,7 +117,7 @@ app.post("/register", (req, res) => {
             }
         });
     }
-});
+}));
 
 
 //login web page
@@ -146,24 +127,14 @@ app.get("/login", (req, res) =>{
 
 
 //login post request
-app.post("/login", (req, res) => {
+app.post("/login", wrapAsync ( (req, res) => {
     makeAllFalse();
     let {name, password} = req.body;
-    let q = `SELECT * FROM user WHERE name = '${name}' AND password = '${password}'`;
-    connection.query(q, (err, result) =>{
-        if(err){
-            res.send("some error in database");
-        }
-        else if( result.length > 0)
-        {   
-            let user = result[0];
-            res.redirect(`/home/${user.id}`);
-        }
-        else{
-            res.send("user not found");
-        }
-    });  
-});
+    query.userLogin(name, password)
+    .then((user) => {
+        res.redirect(`/home/${user.id}`);
+    }).catch((err) =>{throw err});
+}));
 
 
 //get home
@@ -202,168 +173,170 @@ app.get("/guestRequest/:id", (req, res) =>{
 
 
 //post for create guest request
-app.post("/guestRequest/:id/:from_name/:user_type/:department", (req, res) =>{
-    let {id, from_name, user_type, department} = req.params;
-    let req_id = getRandomId(); 
-    const today = new Date();
-    const date = today.toISOString().split('T')[0];
-    let {numberOfGuests, guestName, arrivalDate, leavingDate, arrivalTime, reasonOfArrival, to_id} = req.body;
-    from_name = `${from_name} - ${user_type} Of ${department} department`;
-    let request = [req_id, id, id, from_name, to_id, numberOfGuests, guestName, arrivalDate, arrivalTime, leavingDate, reasonOfArrival, date];
-    let q = `INSERT INTO guestRequest(req_id, creator_id, from_id, from_name, to_id, numberOfGuests, guestName, arrivalDate, arrivalTime, leavingDate, reasonOfArrival, req_date) VALUES(?)`;
-    connection.query(q, [request], (err, result) =>{
-        if(err){
-            console.log(err);
-        }
-        if(result)
-        {   
-            makeAllFalse();
-            res.redirect(`/home/${id}`);
-        }
-    });
-});
+app.post("/guestRequest/:id", wrapAsync ( (req, res) =>{
+    let {id} = req.params;
+    query.getUserById(id).then((user) => {
+        let from_name = user.name;
+        let user_type = user.user_type;
+        let department = user.department;
+        let req_id = getRandomId(); 
+        const today = new Date();
+        const date = today.toISOString().split('T')[0];
+        let {numberOfGuests, guestName, arrivalDate, leavingDate, arrivalTime, reasonOfArrival, to_id} = req.body;
+        from_name = `${from_name} - ${user_type} Of ${department} department`;
+        let request = [req_id, id, id, from_name, to_id, numberOfGuests, guestName, arrivalDate, arrivalTime, leavingDate, reasonOfArrival, date];
+        let q = `INSERT INTO guestRequest(req_id, creator_id, from_id, from_name, to_id, numberOfGuests, guestName, arrivalDate, arrivalTime, leavingDate, reasonOfArrival, req_date) VALUES(?)`;
+        connection.query(q, [request], (err, result) =>{
+            if(err){
+                throw err;
+            }
+            if(result)
+            {   
+                makeAllFalse();
+                res.redirect(`/home/${id}`);
+            }
+        });
+    }).catch((err) =>{throw err});
+}));
 
 
 //get for show all requests
-app.get("/home/showAllRequests/:id", (req, res) =>{
+app.get("/home/showAllRequests/:id", wrapAsync ( (req, res) =>{
     let {id} = req.params;
     nav.showAllRequests = true;
     q = `SELECT * FROM guestRequest WHERE to_id = '${id}'`;
     connection.query(q, (err, result) =>{
         if(err){
-            console.log(err);
+            throw err;
         }
         else{
             nav.allRequests = result;
             res.redirect(`/home/${id}`);
         }
     });
-});
+}));
 
 
 //post for approval or reject request
-app.post("/request/:status/:user_id/:user_name/:user_type/:department/:req_id", (req, res) =>{
-    let {status, user_id, user_name, user_type, department, req_id} = req.params;
-    console.log(status, user_id, user_name, user_type, req_id);
-    if(user_type == 'hod' || user_type == 'coordinator'){
-        user_name = `${user_name} - ${user_type} Of ${department} department`;
-    }
-    else{
-        user_name = `${user_name} - ${user_type} - MITE`;
-    }
-    if( user_type == 'hod'){
-        console.log("user_type is hod");
-        if(status == 'approved'){
-            console.log('status is approoved');
-            let qPrinciple = `SELECT id FROM user WHERE user_type = 'principal'`;
-            connection.query(qPrinciple, (perr, presult) =>{
-                if(perr)
-                {
-                    console.log(perr);
-                }
-                else if(presult.length > 0){
-                    let pid = presult[0].id;
-                    console.log(pid);
-                    q = `UPDATE guestrequest SET req_status = 'AHNAPNAW', from_id ='${user_id}', from_name = '${user_name}', to_id = '${pid}' WHERE req_id = '${req_id}'`;
-                    connection.query(q, (err, result) => {
-                        if(err){
-                            console.log(err);
-                        }
-                        else{
-                            res.send(result);
-                        }
-                    });
-                }
-                else{
-                    res.send("no principal account");
-                }
-            });
-        }
-        else if(status == 'rejected'){
-            q = `UPDATE guestrequest SET req_status = 'NAHNAPNAW' WHERE req_id = '${req_id}'`;
-            connection.query(q, (err, result) => {
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    res.send(result);
-                }
-            });
-        }
-    }
+app.post("/request/:status/:id/:user_name/:user_type/:department/:req_id", wrapAsync ( (req, res) =>{
+    let {status, id, req_id} = req.params;
 
-    else if( user_type == 'principal'){
-        if(status == 'approved'){
-            let qWardon = `SELECT id FROM user WHERE user_type = 'wardon'`;
-            connection.query(qWardon, (werr, wresult) =>{
-                if(werr)
-                {
-                    console.log(werr);
-                }
-                else if(wresult.length > 0){
-                    let wid = wresult[0];
-                    q = `UPDATE guestrequest SET req_status = 'AHNAPNAW', from_id ='${user_id}', from_name = '${user_name}', to_id = '${wid}' WHERE req_id = '${req_id}'`;
+    query.getUserById(id)
+    .then((user) => {
+        let from_name = user.name;
+        if(user.user_type == 'hod' || user.user_type == 'coordinator'){
+            from_name = `${from_name} - ${user.user_type} Of ${user.department} department`;
+        }
+        else{
+            from_name = `${from_name} - ${user.user_type} - MITE`;
+        }
+        if( user.user_type == 'hod'){
+            if(status == 'approved'){
+                query.getUserByType('principal')
+                .then((princy) => {
+                    let pid = princy[0].id;
+                    q = `UPDATE guestrequest SET req_status = 'AHNAPNAW', from_id ='${user.id}', from_name = '${user.name}', to_id = '${pid}' WHERE req_id = '${req_id}'`;
                     connection.query(q, (err, result) => {
                         if(err){
-                            console.log(err);
+                            throw err;
                         }
                         else{
                             res.send(result);
                         }
                     });
-                }
-                else{
-                    res.send("no wardon account");
-                }
-            });
+                })
+                .catch((err) => {throw err;});
+            }
+            else if(status == 'rejected'){
+                q = `UPDATE guestrequest SET req_status = 'NAHNAPNAW' WHERE req_id = '${req_id}'`;
+                connection.query(q, (err, result) => {
+                    if(err){
+                        throw err;
+                    }
+                    else{
+                        res.send(result);
+                    }
+                });
+            }
+            else{
+                throw new ExpressError(400, "Status is Not Valid");
+            }
         }
-        else if(status == 'rejected'){
-            q = `UPDATE guestrequest SET req_status = 'AHNAPNAW' WHERE req_id = '${req_id}'`;
-            connection.query(q, (err, result) => {
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    res.send(result);
-                }
-            });
+        else if( user.user_type == 'principal'){
+            if(status == 'approved'){
+                query.getUserByType('warden')
+                .then((warden) => {
+                    let wid = warden[0].id;
+                    q = `UPDATE guestrequest SET req_status = 'AHNAPNAW', from_id ='${user.id}', from_name = '${user.name}', to_id = '${wid}' WHERE req_id = '${req_id}'`;
+                    connection.query(q, (err, result) => {
+                        if(err){
+                            throw err;
+                        }
+                        else{
+                            res.send(result);
+                        }
+                    });
+                })
+                .catch((err) =>{throw err;});
+            }
+            else if(status == 'rejected'){
+                q = `UPDATE guestrequest SET req_status = 'AHNAPNAW' WHERE req_id = '${req_id}'`;
+                connection.query(q, (err, result) => {
+                    if(err){
+                        throw err;
+                    }
+                    else{
+                        res.send(result);
+                    }
+                });
+            }
+            else{
+                throw new ExpressError(400, "Status is Not Valid");
+            }
         }
-    
-    }
-    else if( user_type == 'wardon'){
-        if(status == 'approved'){
-            q = `UPDATE guestrequest SET req_status = 'AHAPAW' WHERE req_id = '${req_id}'`;
-            connection.query(q, (err, result) => {
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    console.log(result);
-                }
-            });
+        else if( user.user_type == 'wardon'){
+            if(status == 'approved'){
+                q = `UPDATE guestrequest SET req_status = 'AHAPAW' WHERE req_id = '${req_id}'`;
+                connection.query(q, (err, result) => {
+                    if(err){
+                        throw err;
+                    }
+                    else{
+                        console.log(result);
+                    }
+                });
+            }
+            else if(status == 'rejected'){
+                q = `UPDATE guestrequest SET req_status = 'AHAPNAW' WHERE req_id = '${req_id}'`;
+                connection.query(q, (err, result) => {
+                    if(err){
+                        throw err;
+                    }
+                    else{
+                        console.log(result);
+                    }
+                });
+            }
+            else{
+                throw new ExpressError(400, "Status is Not Valid");
+            }
+            
         }
-        else if(status == 'rejected'){
-            q = `UPDATE guestrequest SET req_status = 'AHAPNAW', from_id ='${user_id}', from_name = '${user_name}' WHERE req_id = '${req_id}'`;
-            connection.query(q, (err, result) => {
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    console.log(result);
-                }
-            });
+        else{
+            throw new ExpressError(400, "user_type is invalid");
         }
-    }
-    else{
-        res.send("none of those");
-    }
+
+    }).catch((err) =>{ throw err; });
+}));
+
+
+app.all('*', (req, res) =>{
+    res.send("Page Not Found");
 });
 
-
-// app.use((req, res) =>{
-//     res.send("Page Not Found");
-// });
-
+app.use((err, req, res, next) =>{
+    res.render("error.js");
+});
 
 app.listen(port, ()=>{
     console.log("listening to the port " +port);
