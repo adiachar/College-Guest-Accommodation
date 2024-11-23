@@ -7,7 +7,7 @@
     <% if(nav.createRequest) { %>
         <div class="select-rqst">
             <h1>Please Select the Request :</h1>
-            <a href="/guestRequest/<%= user.id %>">Create a Guest Accomodation Request</a>
+            <a href="/home/createGuestRequest">Create a Guest Accomodation Request</a>
             <a href="/leaveRequest/<%= user.id %>">Make a Leave Request</a>
             <a href="/otherRequest/<%= user.id %>">Make Other Requests</a>
         </div>
@@ -30,106 +30,4 @@
     </div>
     <% } %>
 
-    <!-- guest request -->
-    <% if(nav.createGuestRequest) { %>
-        <div class="create-guest-rqst">
-            <form action="/guestRequest/<%= user.id %>" method ="post" class="rqst-form">
-                <div class="input-field">
-                    <label for="guestName noOfGuests"><i class="fa-solid fa-users"></i></label>
-                    <input type="number" placeholder="No. Guests" id="noOfGuests" name="numberOfGuests" class="no-of-guests input" required/>
-                    <input type="text" placeholder="Enter Guest Name" id="guestName" name="guestName" class="guest-name input" required/>
-                </div>
-                <div class="input-field"> 
-                    <label for="arrivalDate"><i class="fa-solid fa-calendar-days"></i></label>
-                    <p>Arrival Date : </p>
-                    <input type="date" placeholder="Enter Guest Arrival Date" id="arrivalDate" name="arrivalDate" class="date input" required/>
-                    <p>Leaving Date : </p>
-                    <input type="date" placeholder="Enter Guest Leaving Date" id="leavingDate" name="leavingDate" class="date input" required/>
-                    <p>Arrival Time : </p>
-                    <input type="time" placeholder="Enter Guest Arrival Time" id="arrivalTime" name="arrivalTime" class="time input" required/>
-                </div>
-                <div class="input-field">
-                    <label for="subject"><i class="fa-solid fa-align-center"></i></label>
-                    <textarea name="reasonOfArrival" id="reasonOfArrival" placeholder="Please write the reson of arrival" class="reasonOfArrival input" required></textarea>
-                </div>
-
-                <% if(user.user_type == 'coordinator') {%>
-                <div class="input-field">
-                    <label for="reqTo" class="select-label"><i class="fa-solid fa-user-tie"></i></label>
-                    <select name="to_id" id="reqTo" class="select-input input">
-                        <% for(hod of reqTo){ %>
-                            <option value="<%= hod.id %>">Request to HOD <b><%= hod.name %></b> of <b><%= hod.department%></b> Department</option>
-                        <% } %>
-                    </select>
-                </div>
-                <% } %>
-                <% if(user.user_type == 'hod') {%>
-                    <div class="input-field">
-                        <label for="reqTo" class="select-label"><i class="fa-solid fa-user-tie"></i></label>
-                        <select name="to_id" id="reqTo" class="select-input input">
-                            <% for(princy of reqTo){ %>
-                                <option value="<%= princy.id %>">Request to college principal <b><%= princy.name %></b> Sir</option>
-                            <% } %>
-                        </select>
-                    </div>
-                <% } %>
-                <% if(user.user_type == 'principal') {%>
-                    <div class="input-field">
-                        <label for="reqTo" class="select-label"><i class="fa-solid fa-user-tie"></i></label>
-                        <select name="to_id" id="reqTo" class="select-input input">
-                            <% for(warden of reqTo){ %>
-                                <option value="<%= warden.id %>">Request to HOD <b><%= warden.name %></b> of <b><%= warden.department%></b> Department</option>
-                            <% } %>
-                        </select>
-                    </div>
-                <% } %>
-                <button class="approval-btn">Get Approval</button>
-            </form>
-        </div>
-    <% } %>
-
-    <% if(nav.showAllRequests) { %>
-        <div class="show-req-container">
-            <% if(nav.allRequests.length == 0) {%>
-                <p>No Requests</p>
-            <%} %>
-            <% for(request of nav.allRequests){%>
-                <div class="req">
-                    <div class="req-type">
-                        <h4 class="req-head" href="#"><%= request.req_type %></h4>
-                    </div>
-                    <div class="req-dtl">
-                        <div class="req-from">
-                            <p>form : <%= request.from_name %></p>
-                        </div>
-                        <div class="req-date">
-                            <p><%= request.req_date.toString().split('00:00:00')[0] %></p>
-                        </div>
-                    </div>
-                    <div class="show-req">
-                        <div class="req-body">
-                            <div class="guest-dtl">
-                                <h5>Number Of Guests Arriving: <%= request.numberOfGuests %></h5>
-                                <h5>Guests Name: <%= request.guestName %></h5>
-                                <h5>Arrival Date : <%= request.arrivalDate.toString().split('00:00:00')[0] %></h5>
-                                <h5>Arrival Time : <%= request.arrivalTime %></h5>
-                                <h5>Leaving Date : <%= request.leavingDate.toString().split('00:00:00')[0] %></h5>
-                            </div>
-                            <div class="req-subject">
-                                <p> <b>Reason Of Arrival :</b> <br><%= request.reasonOfArrival %></p>
-                            </div>
-                        </div>
-                        <div class="apr-rej">
-                            <form action="/request/rejected/<%= user.id %>/<%= user.name %>/<%=user.user_type%>/<%= user.department %>/<%= request.req_id%>" method="post">
-                                <button type="submit" class="reject-btn">Reject</button>
-                            </form>
-                            <form action="/request/approved/<%= user.id %>/<%= user.name %>/<%=user.user_type%>/<%= user.department %>/<%= request.req_id %>" method="post">
-                                <button type="submit" class="approve-btn">Approve</button>
-                            </form>
-                        </div> 
-                    </div>
-                </div>
-            <% } %>
-        </div>
-    <% } %>
 </body>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/login.css" />
+    <link rel="stylesheet" href="/css/login.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 <body> 
@@ -15,31 +15,25 @@
         <form action="/login" method="post">
             <div class="input-container">
                 <div class="input-field">
-                    <i class="fa-solid fa-user"></i>
-                    <input type="text" placeholder="Name" required id="name" name="name">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="text" placeholder="Email" required id="name" name="email">
                 </div>
-
                 <div class="input-field">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" placeholder="password" required id="password" name="password">
+                    <input type="password" placeholder="Password" required id="password" name="password">
                 </div>
             </div>
             <button type="submit" class="btn">Submit</button>
+            <% if(userStatus) {%>
+                <p style="color: red; margin-top: 10px;"><%= userStatus %></p>
+            <% } %>
         </form>
 
         <form action="/register" method="get" class="register-form">
             <p>Not yet Registerd? Register Here</p>
-            <div class="register-field">
-                <select name="user_type" id="user_type">
-                    <option value="hod">Register as Hod</option>
-                    <option value="principal">Register as Principle</option>
-                    <option value="coordinator">Register as Coordinator</option>
-                    <option value="wardon">Register as Wardon</option>
-                </select>
-            </div>
             <button type="submit" class="btn">Register</button>
         </form>
-        <p id="pass-check">help improve our webpage by <a href="feedback">giving Feedback</a></p>
+        <p id="pass-check">help improve this webpage by <a href="feedback">giving Feedback</a></p>
     </div>   
 </body>
 </html>

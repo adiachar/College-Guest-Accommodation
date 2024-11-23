@@ -4,64 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link rel="stylesheet" href="/register.css" />
+    <link rel="stylesheet" href="/css/register.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    
+      
 </head>
 <body>
     <div class="container">
-        
-        <span class="title">Register - As <%= user_type.toString().toUpperCase() %></span>
-        <form action="/register?user_type=<%= user_type %>" method="post" id="form">
-
+        <span class="title">Register</span>
+        <form action="/register" method="post" id="form" class="form" >
             <div class="input-container">
-
                 <div class="input-field">
-                    <i class="fa-solid fa-user"></i>
-                    <input type="text" placeholder="Enter Your Name" required id="name" name="name">
+                    <i class="fa-solid fa-user form-label"></i>
+                    <input type="text" placeholder="Enter Your Name" required id="name" name="name" class="form-control"/>
                 </div>
-
                 <div class="input-field">
-                    
-                    <% if(user_type == "hod" || user_type == "coordinator") { %>
-
-                        <i class="fa-solid fa-building-columns"></i>
-                        <select name="department" id="department">
-                            <option value="ISE">Information Science </option>
-                            <option value="CSE">Computer Science </option>
-                            <option value="EC">Electrical </option>
-                            <option value="AI">Artificial Inteligence</option>
-                        </select>
-
-                    <% } %>
-
-                    <% if(user_type == "principal") { %>
-
-                        <i class="fa-solid fa-building-columns"></i>
-                        <select name="college" id="department">
-                            <option value="mite">Mangalore Institute Of Technology and Engineering </option>
-                        </select>
-
-                    <% } %>
-
-                    <% if(user_type == "wardon") { %>
-
-                        <i class="fa-solid fa-building-columns"></i>
-                        <select name="hostel" id="department">
-                            <option value="mite">mite hostel</option>
-                        </select>
-                    <% } %>
-
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" placeholder="Enter Your email" required id="email" name="email" class="form-control" />
                 </div>
-
+                <div class="input-field">
+                    <i class="fa-solid fa-address-card"></i>
+                    <select name="user_type" id="user_type" class="form-control">
+                        <option value="coordinator">Coordinator</option>
+                        <option value="hod">HOD</option>
+                        <option value="principal">Principal</option>
+                        <option value="warden">Warden</option>
+                    </select>
+                </div>
+                <div class="input-field">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <select name="department" id="department" class="form-control">
+                        <option value="ise">ISE</option>
+                        <option value="cse">CSE</option>
+                        <option value="aiml">AIML</option>
+                        <option value="aro">ARO</option>
+                        <option value="iot">IOT</option>
+                        <option value="mec">MEC</option>
+                    </select>
+                </div>
                 <div class="input-field">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" placeholder="Enter Password" required id="password" name="password">
+                    <input type="password" placeholder="Enter Password" required id="password" name="password" class="form-control">
                 </div>
 
                 <div class="input-field">
                     <i class="fa-solid fa-circle-check"></i>
-                    <input type="password" placeholder="Confirm Password" required id="confirmPassword" name="confirmPassword">
+                    <input type="password" placeholder="Confirm Password" required id="confirmPassword" name="confirmPassword" class="form-control">
                 </div>
 
             </div>
@@ -70,6 +57,6 @@
         <p id="pass-check">help improve our webpage by <a href="feedback">giving Feedback</a></p>
         
     </div>
-    <script src="/register.js"></script>
+    <script src="/js/register.js"></script>
 </body>
 </html>

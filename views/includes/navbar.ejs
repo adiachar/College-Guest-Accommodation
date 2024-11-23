@@ -1,11 +1,14 @@
 <nav>
     <ul class="nav1">
-        <li><a href="/home/showAllRequests/<%= user.id %>"><i class="fa-solid fa-bell"></i><br>Show Requests</a></li>
-        <li><a href="/home/createRequest/<%= user.id %>"><i class="fa-solid fa-plus"></i><br>Create Request</a></li>
+        <li><a href="/home/showAllRequests"><i class="fa-solid fa-bell"></i><br>Show All Requests</a></li>
+        <% if( user.user_type == 'hod'|| user.user_type == 'coordinator') {%>
+            <li><a href="/home/showRequestStatus"><i class="fa-solid fa-clock"></i></i><br>Show Request Status</a></li>
+            <li><a href="/home/createRequest"><i class="fa-solid fa-plus"></i><br>Create Request</a></li>
+        <% } %>
     </ul>
     <ul class="nav2">
-        <li><a href="/home/redirect/<%= user.id %>"><i class="fa-solid fa-house"></i><br>Home</a></li>
-        <li><a id="account" href="/home/account/<%= user.id %>"><i class="fa-solid fa-circle-user"></i><br>Account</a></li>
+        <li><a href="/home/redirect"><i class="fa-solid fa-house"></i><br>Home</a></li>
+        <li><a id="account" href="/home/account"><i class="fa-solid fa-circle-user"></i><br>Account</a></li>
         <li><a href="/home/About"><i class="fa-solid fa-circle-info"></i><br>About</a></li>
     </ul>
 </nav>
