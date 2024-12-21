@@ -39,5 +39,8 @@ module.exports.userLogin = async (req, res) => {
             res.redirect("/home");
         }
         }).catch((err) =>{throw err});
+    }else{
+        let userStatus = 'Please check email';
+        res.render('login.ejs', {userStatus});
     }
 }
