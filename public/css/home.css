@@ -18,7 +18,7 @@ body::-webkit-scrollbar{
     width: 0px;
 }
 
-.filter{
+/* .filter{
     position: fixed;
     top: 0;
     left: 0;
@@ -27,7 +27,7 @@ body::-webkit-scrollbar{
     background-color: rgba(0, 0, 0, 0.245);
     backdrop-filter: blur(2px);
     z-index: -1;
-}
+} */
 
 .caption{
     position: absolute;

@@ -1,4 +1,7 @@
 # miniProject
-college guest accommodation management System
-connection name: miteConnection.
-password: Ad2142004.
+
+## Required Packages 
+`node -v`
+- v20.18.0
+`npm -v`
+- 10.9.2
