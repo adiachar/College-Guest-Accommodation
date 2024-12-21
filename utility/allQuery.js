@@ -25,6 +25,7 @@ class query{
     async getUserById(id, table = 'user')
     {   
         return new Promise((resolve, reject) => {
+            table = table.toLowerCase();
             connection.query(`SELECT id, name, email, user_type, department FROM ${table} WHERE id = '${id}'`, (err, result) => {
                 if(err) 
                 {
@@ -185,11 +186,11 @@ class query{
         return new Promise((resolve, reject) => {
             let qReqCount = "";
             if(userType == "hod"){
-                qReqCount = `SELECT COUNT(*) AS count FROM guestRequest WHERE requestStatus = "NHNPNW" AND to_id = "${Toid}";`;
+                qReqCount = `SELECT COUNT(*) AS count FROM guestrequest WHERE requestStatus = "NHNPNW" AND to_id = "${Toid}";`;
             }else if(userType == "principal"){
-                qReqCount = `SELECT COUNT(*) AS count FROM guestRequest WHERE requestStatus = "AHNPNW" AND to_id = "${Toid}";`;
+                qReqCount = `SELECT COUNT(*) AS count FROM guestrequest WHERE requestStatus = "AHNPNW" AND to_id = "${Toid}";`;
             }else if(userType == "warden"){
-                qReqCount = `SELECT COUNT(*) AS count from wardenGuestRequest w JOIN guestRequest g ON w.guestRequest_id = g.id WHERE warden_id = "${Toid}" AND g.requestStatus = "AHAPNW";`
+                qReqCount = `SELECT COUNT(*) AS count from wardenGuestRequest w JOIN guestrequest g ON w.guestRequest_id = g.id WHERE warden_id = "${Toid}" AND g.requestStatus = "AHAPNW";`
             }else if(userType == "coordinator"){
                 resolve(0);
             }
