@@ -26,8 +26,8 @@ module.exports.userLoginPage = (req, res) =>{
 
 module.exports.userLogin = async (req, res) => {
     let {email, password} = req.body;
-    let idx = email.indexOf(" ");
-    if(idx == -1){
+    // let idx = email.indexOf(" ");
+    // if(idx == -1){
         query.userLogin(email, password)
         .then((user) => {
         if(!user){
@@ -39,8 +39,9 @@ module.exports.userLogin = async (req, res) => {
             res.redirect("/home");
         }
         }).catch((err) =>{throw err});
-    }else{
-        let userStatus = 'Please check email';
-        res.render('login.ejs', {userStatus});
-    }
+    // }else{
+    //     let userStatus = 'Please check email';
+    //     res.render('login.ejs', {userStatus});
+    // }
+    
 }
