@@ -56,7 +56,8 @@ class query{
         });
     }
 
-    async userRegister(id, name, email, user_type, department, password){
+    async userRegister(name, email, user_type, department, password){
+        let id = this.getRandomId();
         let q = `INSERT INTO user VALUES ( '${id}', '${name}', '${email}', '${user_type}', '${department}', '${password}')`;
         return new Promise((resolve, reject) =>{
             connection.query(q, (err, result) =>{
@@ -148,7 +149,7 @@ class query{
                 
                 let q = `INSERT INTO guest VALUES(?)`;
                 let values = [id, req_id, guest_name[i], guestInfo[i], vegNonveg[i], food_time, arrDate, arrTime, leavDate];
-                console.log(q);
+                // console.log(q);
                 connection.query(q, [values], async (err, res) =>{
                     if(err){
                         return reject(err);
@@ -179,6 +180,30 @@ class query{
             });
         });
     }
+
+    async reqCount(Toid, userType){
+        return new Promise((resolve, reject) => {
+            let qReqCount = "";
+            if(userType == "hod"){
+                qReqCount = `SELECT COUNT(*) AS count FROM guestRequest WHERE requestStatus = "NHNPNW" AND to_id = "${Toid}";`;
+            }else if(userType == "principal"){
+                qReqCount = `SELECT COUNT(*) AS count FROM guestRequest WHERE requestStatus = "AHNPNW" AND to_id = "${Toid}";`;
+            }else if(userType == "warden"){
+                qReqCount = `SELECT COUNT(*) AS count from wardenGuestRequest w JOIN guestRequest g ON w.guestRequest_id = g.id WHERE warden_id = "${Toid}" AND g.requestStatus = "AHAPNW";`
+            }else if(userType == "coordinator"){
+                resolve(0);
+            }
+            if(qReqCount){
+                connection.query(qReqCount, (err, result) => {
+                    if(err){
+                        reject(err);
+                    }else{
+                        resolve(result[0].count);
+                    }
+                });
+            }
+        });
+    }
     
     async getGuestRequestsById(id)
     {   
@@ -203,6 +228,65 @@ class query{
         });
     }
 
+    async deleteGuestRequestById(id)
+    {
+        return new Promise((resolve, reject) => {
+            let qGuest = `DELETE FROM guest WHERE guestRequest_id = '${id}';`;
+            let qWarden = `DELETE FROM wardenguestrequest WHERE guestRequest_id = '${id}';`
+            let qGuestRequest = `DELETE FROM guestrequest WHERE id = '${id}';`;
+
+            connection.query(qWarden, (err, result) => {
+                if(err){
+                    reject(err);
+                }
+                else{
+                    connection.query(qGuest, (err, result) => {
+                        if(err){
+                            reject(err);
+                        }
+                        else{
+                            connection.query(qGuestRequest, (err, result) => {
+                                if(err){
+                                    reject(err);
+                                }
+                                else{
+                                    return resolve("request Deleted");
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    async deleteGuestRequestForToId(reqId, user_type){
+        return new Promise((resolve, reject) => {
+            let sts = "";
+            if(user_type == "hod"){
+                sts = "RH";
+            }else if(user_type == "principal"){
+                sts = "RP";
+            }else if(user_type == "warden"){
+                sts = "RW";
+            }
+            if(typeof(sts) != null){
+                let qGuestRequest = `UPDATE guestrequest SET to_id = 'null', requestStatus='${sts}', statusMessage='Request Deleted' WHERE id='${reqId}'`;
+                connection. query(qGuestRequest, (err, result) =>{
+                    if(err){
+                        return reject(err);
+                    }
+                    else{
+                        return resolve("Request Deleted");
+                    }
+                });
+            }else{
+                reject("user type incorrect");
+            }
+            
+        });
+    }
+
     async getGuestRequestsByCreatorId(id)
     {   
         return new Promise((resolve, reject) =>{
@@ -221,7 +305,7 @@ class query{
     async rejectGuestRequest(req_id, sts, reasonForRejection){
         return new Promise((resolve, reject) => {
             let q = `UPDATE guestrequest SET requestStatus='${sts}', statusMessage='${reasonForRejection}' WHERE id='${req_id}'`;
-            console.log(q);
+            // console.log(q);
             connection.query(q, (err, result) =>{
                 if(err){ return reject(err) }
                 else{
@@ -235,23 +319,65 @@ class query{
     async approveGuestRequest(req_id, userType, sts){
         return new Promise((resolve, reject) => {
             let qApprove = `UPDATE guestrequest SET requestStatus = ?, to_id = ? WHERE id = '${req_id}'`;
-            this.getUserByType(userType)
-            .then((user) =>{
-                if(user){
-                    let id = user[0].id;
-                    connection.query(qApprove, [sts, id], (err, result) => {
-                        if(err){
-                           reject(err);
+                if(userType != "null"){
+                    this.getUserByType(userType)
+                    .then((user) =>{
+                        if(user){
+                            let id = user[0].id;
+                            connection.query(qApprove, [sts, id], (err, result) => {
+                                if(err){
+                                reject(err);
+                                }
+                                else{
+                                    resolve(result);
+                                }
+                            });
                         }
                         else{
-                            resolve(result);
+                            reject('User Not Found!');
+                        }
+                }).catch((err) => { throw err; });
+            }else{ return reject("user type not defined in approveGuestRequest");}
+        });
+    }
+
+    async approveGuestRequestPrincipal(req_id, wardenDId, wardenFId, pId){
+        return new Promise((resolve, reject) => {
+            const id1 = this.getRandomId();
+            const id2 = this.getRandomId();
+            const requestDate = this.getDate();
+            let values1 = [id1, wardenDId, req_id, 'GD', requestDate];
+            let values2 = [id2, wardenFId, req_id, 'GFD', requestDate];
+            let Aquery = "INSERT INTO wardenGuestRequest VALUES(?)";
+            connection.query(Aquery, [values1], (err, result) => {
+                if(err){
+                    return reject(err);
+                }else{
+                    connection.query(Aquery, [values2], async (err, result) => {
+                        if(err){
+                            // console.log("in query err2");
+                            return reject(err);
+                        }else{
+                            // console.log("in resolve of guest request");
+                            this.approveGuestRequest(req_id, "principal", "AHAPNW");
+                            return resolve(result);
                         }
                     });
                 }
-                else{
-                    reject('User Not Found!');
+            });
+        })
+    }
+
+    async getGuestRequestsForWarden(userId){
+        return new Promise((resolve, reject) => {
+            let q = `SELECT w.*, g.* FROM wardenguestrequest w JOIN guestrequest g ON w.guestRequest_id = g.id WHERE warden_id = '${userId}'`;
+            connection.query(q, async (err, data) => {
+                if(err){
+                    throw err;
+                }else{
+                    return resolve(data);
                 }
-            }).catch((err) => { throw err; });
+            });
         });
     }
 }

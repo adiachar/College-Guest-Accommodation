@@ -1,0 +1,99 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+body{
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #142424;
+}
+
+.container{
+    max-width: 30rem;
+    width: 100%;
+    padding: 20px 40px 20px 40px;
+    background: #fff;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.222);
+    border-radius: 10px;
+}
+
+.title{
+    color: rgba(0, 0, 0, 0.805);
+    font-size: 25px;
+    font-weight: 500;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-container{
+    height: 27rem;
+    width: 100%;
+    margin: 40px 0px 20px 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.input-field{
+    height: 2.5rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.163);
+}
+
+i{  
+    color: rgba(0, 0, 0, 0.445);
+}
+
+input, select{
+    height: 100%;
+    width: 100%;
+    margin-left: 20px;
+    border: 0px;
+    outline: 0px;
+    font-size: 14px;
+}
+
+option{
+    transition-duration: 2s;
+    transition-timing-function: linear;
+    height: 20px;
+}
+
+.btn{
+    height: 2.5rem;
+    width: 100%;
+    border-radius: 2px;
+    background-color: #08a56c;
+    color: white;
+    border: 0px;
+    outline: none;
+    align-self: center;
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.2);
+    transition-duration: 0.2s;
+}
+
+.btn:hover{
+    background-color: #078e5c;
+}
+
+#pass-check{
+    margin: 10px;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.471);
+    text-align: center;
+}
+
+

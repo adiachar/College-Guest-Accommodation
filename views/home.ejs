@@ -2,27 +2,30 @@
 <% layout("/layouts/boilerplate.ejs") %>
 
 <body>
-
+    <% if(nav !== "createRequest" && nav !== "account") {%>
+    <div class="caption"><h4>Guestify</h4><p class="mite">Welcome to MITE</p></div>
+    <% } %>
     <!-- request for createRequest -->
-    <% if(nav.createRequest) { %>
+    <% if(nav == "createRequest") { %>
         <div class="select-rqst">
             <h1>Please Select the Request :</h1>
             <a href="/home/createGuestRequest">Create a Guest Accomodation Request</a>
-            <a href="/leaveRequest/<%= user.id %>">Make a Leave Request</a>
-            <a href="/otherRequest/<%= user.id %>">Make Other Requests</a>
+            <a href="#">Make a Leave Request</a>
+            <a href="#">Make Other Requests</a>
         </div>
     <% } %>
 
     <!-- request for account details -->
-    <% if(nav.showAccount) { %>
+    <% if(nav == "account") { %>
     <div class="account">
         <div class="account-icon">
             <i class="fa-solid fa-circle-user"></i>
         </div>
         <div class="account-body">
-            <p class="account-text"> Name : <b><%= user.name %></b></p>
-            <p class="account-text">Working As : <b><%= user.user_type %></b></p>
-            <p class="account-text">Department : <b><%= user.department %></b></p>
+            <p class="account-text"><b> Name : </b><%= user.name %></p>
+            <p class="account-text"><b> Email : </b><%= user.email %></p>
+            <p class="account-text"><b>Working As : </b><%= user.user_type %></p>
+            <p class="account-text"><b>Department : </b><%= user.department %></p>
             <form action="#">
                 <button class="edit-btn">Edit Account</button>
             </form>

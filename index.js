@@ -3,101 +3,41 @@ const mysql = require("mysql2");
 const path = require("path");
 const ejsMate = require("ejs-mate");
 const cookieParser = require("cookie-parser");
+const home = require("./routes/home.js");
+const guestRequest = require("./routes/guestRequest.js");
+const user = require("./routes/user.js");
+const requests = require("./routes/requests.js");
+const session = require("express-session");
+const methodOverride = require("method-override");
+
 const app = express();
 const port = 8080;
-const wrapAsync = require("./utility/wrapAsync");
-const query = require("./utility/allQuery");
-const jwt = require("jsonwebtoken");
-const home = require("./routes/homeRouts.js");
-const gstRqst = require("./routes/gstRqstRouts.js");
 
+const sessionOptions = {
+    secret:  'superSecret@key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+    }
+}
+
+app.use(session(sessionOptions));
 app.use(express.urlencoded({extended: true}));
 app.use(express.static("public"));
+app.use(methodOverride("_method"));
 app.use(cookieParser());
 app.use(express.json());
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.engine("ejs", ejsMate);
 
-const secretKey = "secretKey";
-
 app.use('/home', home);
-app.use('/guestRequest', gstRqst);
-
-// connection to the database
-// const connection = mysql.createConnection({
-//     host: '127.0.0.1',
-//     user: 'root',
-//     database: 'mite',
-//     password: 'Ad2142004',
-// });
-
-let nav = { 
-    showAccount : false, 
-    createRequest : false,
-};
-
-let makeAllFalse = () =>{
-    nav.showAccount = false;
-    nav.createRequest = false;
-}
-
-//register web page
-app.get("/register", (req, res) =>{
-    res.render("register.ejs");
-});
-
-//register post request
-app.post("/register", wrapAsync ( async (req, res) => {
-    let {name, email, user_type, department, password, confirmPassword} = req.body;
-    let id = getRandomId();
-    if(password == confirmPassword)
-    {   
-        await query.userRegister(id, name, email, user_type, department, password)
-        .then((user) => {
-            jwt.sign(user, secretKey, (err, token) =>{
-                if(err) throw err;
-                else{
-                    res.cookie('token', token, {httpOnly: true, secure: true, sameSite: 'Strict'});
-                    makeAllFalse();
-                    res.redirect('/home');
-                }
-            })
-        }).catch((err) => {throw err});
-    }
-    else{
-        res.redirect('/register');
-    }
-}));
-
-//login web page
-app.get("/login", (req, res) =>{
-    let userStatus = '';
-    res.render("login.ejs", {userStatus});
-});
-
-//login post request
-app.post("/login", wrapAsync ( async (req, res) => {
-    makeAllFalse();
-    let {email, password} = req.body;
-    query.userLogin(email, password)
-    .then((user) => {
-        if(!user){
-            let userStatus = 'user Not found';
-            res.render('login.ejs', {userStatus});
-        }
-        else{
-            jwt.sign(user, secretKey, {expiresIn : '1h'}, (err, token) =>{
-                if(err) throw err;
-                else{
-                    res.cookie('token', token, {httpOnly: true, secure: true, sameSite: 'Strict'});
-                    res.redirect("/home");
-                }
-            });
-        }
-    }).catch((err) =>{throw err});
-}));
-
+app.use('/guestRequest/:reqId', guestRequest);
+app.use("/user", user);
+app.use("/requests", requests);
 
 app.all('*', (req, res) =>{
     res.send("Page Not Found");
@@ -105,9 +45,9 @@ app.all('*', (req, res) =>{
 
 app.use((err, req, res, next) =>{
     res.render("error.ejs", {err});
+    console.log(err);
 });
 
 app.listen(port, ()=>{
     console.log("listening to the port " +port);
 });
-

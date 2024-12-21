@@ -1,0 +1,66 @@
+<% layout('layouts/boilerplate.ejs') %>
+
+<body>
+    <div class="showAllRequest-container col-12">
+        <% if(guestRequestData.length == 0) {%>
+            <h5 class="align-text-center">No Request Created</h5>
+        <% } %>
+        <% for(let guestRequest of guestRequestData) {%>
+            <div class="row m-2 p-2 status-container">
+                <div class="row m-2 mb-0 p-0">
+                    <p class="req-date col-3 me-2 p-1 ps-2">Created on: <%= guestRequest.requestDate.toString().split('00:00:00')[0] %></p>
+                </div>
+                <% if(guestRequest.requestStatus !== "AHAPAW") {%>
+                <div class="row m-2 border col-12 p-2">
+                    <% if(guestRequest.requestStatus == 'RH'){%>
+                        <p style="color: red" class="status">Request Rejected By HOD</p>
+                        <p>Reason: <%= guestRequest.statusMessage %></p>
+                    <% } %>
+                    <% if(guestRequest.requestStatus == 'RP'){%>
+                        <p style="color: red" class="status">Request Rejected By Principal</p>
+                        <p>Reason: <%= guestRequest.statusMessage %></p>
+                    <% } %>
+                    <% if(guestRequest.requestStatus == 'RW'){%>
+                        <p style="color: red" class="status">Request Rejected By Warden</p>
+                        <p>Reason: <%= guestRequest.statusMessage %></p>
+                    <% } %>
+                    <% if(guestRequest.requestStatus[0] == 'N' && user.user_type !== "hod"){%>
+                        <p style="color: rgb(0, 65, 230)" class="status">HOD Approval Pending...</p>
+                    <% } %>
+                    <% if(guestRequest.requestStatus[0] == 'A' && user.user_type !== "hod"){%>
+                        <p style="color: green" class="status" >Approved by HOD</p>
+                    <% } %>
+                    <% if(guestRequest.requestStatus[2] == 'N'){%>
+                        <p style="color: rgb(0, 65, 230)" class="status">Principal Approval Pending...</p>
+                    <% } %>
+                    <% if(guestRequest.requestStatus[2] == 'A'){%>
+                        <p style="color: green" class="status" >Approved by Principal</p>
+                    <% } %>
+                    <% if(guestRequest.requestStatus[4] == 'N'){%>
+                        <p style="color: rgb(0, 65, 230)" class="status">Wardon Approval Pending...</p>
+                    <% } %>
+                </div>
+                <% } %>
+                <% if(guestRequest.requestStatus == "AHAPAW") {%>
+                    <div class=" requestStatus row m-2 col-2 p-2">
+                        <p style="color: green" class="status" >Request Approved</p>
+                    </div>
+                    <form action="/guestRequest/<%= guestRequest.id %>/report" method="GET" class="p-0 mt-2 mb-2 col-2">
+                        <button class="btn btn-success col-12">Show Report</button>
+                    </form>
+                <% } %>
+                <div class="row ms-2 p-0">
+                    <form action="/guestRequest/<%= guestRequest.id %>" method="GET" class="p-0 col-2">
+                        <button class="btn col-12" style="background-color: rgb(61, 61, 209); color: white">View</button>
+                    </form>
+                    <form action="/guestRequest/<%= guestRequest.id %>/delete?_method=DELETE" method="POST" class="p-0 ms-2 col-2">
+                        <button class="btn btn-dark col-12">Delete</button>
+                    </form>
+                </div>
+                        
+            </div>
+        <% } %>
+    </div>
+    <script src="/js/showRequestStatus.js"></script>
+</body>
+</html>

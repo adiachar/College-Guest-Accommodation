@@ -18,3 +18,17 @@ for(req of request)
         
     });
 }
+
+let text = document.querySelector(".mite");
+let words = "Welcome To Mangalore Institute Of Technology And Engineering.";
+text.innerHTML = "";
+let i = 0;
+setInterval(() => {
+    text.innerHTML = words.slice(0, i++);
+    if(words.length == i-2){
+        setTimeout(() => {
+            text.innerHTML = "";
+        i = 0;
+        }, 60000);       
+    }
+}, 80);
