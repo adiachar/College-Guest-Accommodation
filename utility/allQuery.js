@@ -76,7 +76,7 @@ class query{
     async userLogin(email, password)
     {   
         return new Promise((resolve, reject) => {
-            connection.query(`SELECT * FROM user WHERE email = '${email}' AND password = '${password}'`, (err, result) => {
+            connection.query(`SELECT * FROM user WHERE email = ? AND password = ?`, [email, password], (err, result) => {
                 if(err) 
                 {
                     reject(err);
