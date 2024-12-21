@@ -26,8 +26,10 @@ module.exports.userLoginPage = (req, res) =>{
 
 module.exports.userLogin = async (req, res) => {
     let {email, password} = req.body;
-    query.userLogin(email, password)
-    .then((user) => {
+    let idx = email.indexOf(" ");
+    if(idx == -1){
+        query.userLogin(email, password)
+        .then((user) => {
         if(!user){
             let userStatus = 'user Not found';
             res.render('login.ejs', {userStatus});
@@ -36,5 +38,6 @@ module.exports.userLogin = async (req, res) => {
             req.session.user = user;
             res.redirect("/home");
         }
-    }).catch((err) =>{throw err});
+        }).catch((err) =>{throw err});
+    }
 }
