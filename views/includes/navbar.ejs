@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg">
     <ul class="nav1 p-0">
-        <% if(user.user_type == 'hod'|| user.user_type == 'coordinator') {%>
+        <% if(user.user_type == 'coordinator') {%>
             <li><a href="/home/createRequest">Create Request</a></li>
             <li><a href="/requests/status">Request Status</a></li>
         <% } %>
