@@ -1,22 +1,22 @@
 <% layout('./layouts/boilerplate') %>
 <body>
     <div class="filter"></div>
-    <div class="container row offset-0 rounded mb-5 p-5" style="background-color: white; box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);">
-        <form action="/home/createGuestRequest" method ="POST" novalidate class="needs-validation col-12">
-            <div class="row mb-3">
-                <div class="col-3">
+    <div class="inContainer" style="background-color: white; box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);">
+        <form action="/home/createGuestRequest" method ="POST" novalidate class="needs-validation col-12 p-0">
+            <div class="noOfgst">
+                <div class="">
                     <label for="numberOfGuests" class="form-label">Number Of Guests arriving:</label>
                     <input type="number" name="numberOfGuests" id="numberOfGuests" class="form-control" required/>
                 </div>
             </div>
-            <div class="row border-top pt-5" id="guestNameAndDetail">
+            <div class="row pt-0 pt5 m-1" id="guestNameAndDetail">
                 <!-- Added by Js -->
             </div>
-            <div class="row mb-3">
+            <div class="rsnOfArr">
                 <label for="reasonOfArrival" class="form-label">Reason Of Arrival:</label>
                 <textarea name="reasonOfArrival" id="reasonOfArrival" class="form-control" required></textarea>
             </div>
-            <div class="row mb-3">
+            <div class="sendTo">
                 <label for="to_id" class="form-label">Send This Request To:</label>
                 <select name="to_id" id="to_id" class="form-control" required>
                     <option value="" disabled selected >Select Hod</option>

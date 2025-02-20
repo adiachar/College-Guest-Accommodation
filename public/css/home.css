@@ -313,3 +313,75 @@ footer{
     opacity: 1;
 }
 
+
+/* create Request */
+.inContainer{
+    margin: 1px;
+    display: flex;
+    padding: 5rem;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 100vh;
+    border-radius: 20px;
+    width: 100vw;
+    z-index: 1;
+}
+
+.noOfgst{
+    width: 100%;
+    padding: 0.5rem;
+}
+
+.gstDtl{
+    width: 100%;
+    margin: 1rem 0;
+    border: 2px solid rgba(0, 0, 0, 0.166);
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.gstTime{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.gstTime .time{
+    flex: 1;
+    margin: 0.2rem;
+}
+
+.gstDInfo{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.5rem;
+}
+
+.gstFInfo{
+    display: flex;
+    margin-top: 0.5rem;
+}
+
+.gstFInfo .info{
+    flex: 1;
+    & input{
+        margin-left: 1rem;
+    }
+}
+
+.rsnOfArr{
+    width: 100%;
+    padding: 0.5rem;
+}
+
+.sendTo{
+    width: 100%;
+    padding: 0.5rem;
+}
+
+@media screen and (max-width: 600px) {
+    .inContainer{
+        padding: 1rem;
+    };
+}
