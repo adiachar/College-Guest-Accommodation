@@ -4,7 +4,7 @@ const ExpressError = require("../utility/ExpressError");
 module.exports.home = async (req, res) =>{
     if(res.locals.user){
         let nav = req.session.nav;
-        query.reqCount(res.locals.user.id, res.locals.user.user_type)
+        query.reqCount(res.locals.user.id, res.locals.user.userType)
         .then((reqCount) => {
             res.locals.user.reqCount = reqCount;
             res.render("home.ejs", {nav});
@@ -32,25 +32,22 @@ module.exports.createRequest = (req, res) =>{
 
 module.exports.createGuestRequestPage = async (req, res) =>{
     if(res.locals.user){
-        if(res.locals.user.user_type == 'coordinator')
-        {  
+        if(res.locals.user.userType == 'coordinator'){  
             query.getUserByType('hod')
             .then((upperLevelUser) =>{
                 res.render('gstRqst/createRequest.ejs', {upperLevelUser});
             })
             .catch((err) =>{throw err});
         }
-        else if(res.locals.user.user_type == 'hod')
-        {
+        else if(res.locals.user.userType == 'hod'){
             query.getUserByType('principal')
-                .then((upperLevelUser) =>{
-                    res.render('gstRqst/createRequest.ejs', {upperLevelUser});
-                })
-                .catch((err) =>{throw err});
+            .then((upperLevelUser) =>{
+                res.render('gstRqst/createRequest.ejs', {upperLevelUser});
+            })
+            .catch((err) =>{throw err});
         }
-        else if(res.locals.user.user_type == 'principal')
-        {
-            query.getUserByType('principal')
+        else if(res.locals.user.userType == 'principal'){
+            query.getUserByType('warden')
             .then((upperLevelUser) =>{
                 res.render('gstRqst/createRequest.ejs', {upperLevelUser});
             })

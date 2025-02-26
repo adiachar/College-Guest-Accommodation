@@ -21,7 +21,9 @@ module.exports.guestRequestLetter = async (req, res) =>{
 
 module.exports.guestRequestDelete = async (req, res)=>{
     let {reqId} = req.params;
-    query.deleteGuestRequestById(reqId)
+    let userId = res.locals.user.id;
+    let userType = res.locals.user.userType;
+    query.deleteGuestRequestById(reqId, userId, userType)
     .then((result) => {
         let confirmation = {};
         confirmation.status = "successfull";
@@ -33,14 +35,18 @@ module.exports.guestRequestDelete = async (req, res)=>{
 
 module.exports.guestRequestReport = (req, res) => {
     let {reqId} = req.params;
-    res.render("report.ejs");
+    query.getGuestRequestsById(reqId)
+    .then(({guestRequest, guest}) => {
+        guestRequest = guestRequest[0];
+        console.log({guestRequest, guest});
+        res.render("report.ejs", {guestRequest, guest});
+    });
 }
-
 
 module.exports.guestRequestDeleteForToId = async (req, res) => {
     const {reqId, toId} = req.params;
-    if(res.locals.user.id == toId){
-        query.deleteGuestRequestForToId(reqId, res.locals.user.user_type)
+    if(res.locals.user.id === toId){
+        query.deleteGuestRequestById(reqId, toId,  res.locals.user.userType)
         .then((result) => {
             console.log(result);
             let confirmation = {};
@@ -66,12 +72,12 @@ module.exports.guestRequestApprove = async (req, res) =>{
     let {reqId} = req.params;
     let status = "";
     let sendTo = "";
-    if(res.locals.user.user_type == "hod"){
+    if(res.locals.user.userType == "hod"){
         status = "AHNPNW";
         sendTo = "principal";
-    }else if(res.locals.user.user_type == "warden"){
+    }else if(res.locals.user.userType == "warden"){
         status = "AHAPAW";
-        sendTo = "principal";
+        sendTo = "messWarden";
     }
     query.approveGuestRequest(reqId, sendTo, status)
     .then((result) => {
@@ -92,18 +98,19 @@ module.exports.guestRequestReject = async (req, res) =>{
     let {reasonForRejection} = req.body;
     let sts;
     console.log("in guest Reject");
-    if(res.locals.user.user_type == 'hod'){
+    if(res.locals.user.userType == 'hod'){
         sts = 'RH';
         reject(sts);
     }
-    else if(res.locals.user.user_type == 'principal'){
+    else if(res.locals.user.userType == 'principal'){
         sts = 'RP';
         reject(sts);
     }
-    else if(res.locals.user.user_type == 'warden'){
+    else if(res.locals.user.userType == 'warden'){
         sts = 'RW';
         reject(sts);
     }
+    
     function reject(sts){
         query.rejectGuestRequest(reqId, sts, reasonForRejection)
         .then((result) => {

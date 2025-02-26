@@ -22,7 +22,7 @@ let department = document.getElementById("department");
 
 userType.addEventListener("change", () =>{
     department.innerHTML = "";
-    if(userType.value.toLowerCase() == 'hod' || userType.value.toLowerCase() == 'coordinator')
+    if(userType.value == 'hod' || userType.value == 'coordinator')
     {   
         let options = [
             {value :'ise'},
@@ -33,16 +33,14 @@ userType.addEventListener("change", () =>{
             {value :'mec'},
         ]
 
-        for(let option of options)
-        {   
+        for(let option of options){   
             let optn = document.createElement('option');
             optn.value = option.value;
             optn.innerHTML = option.value.toUpperCase();
             department.appendChild(optn);
         }
     }
-    else if(userType.value.toLowerCase() == 'principal' || userType.value.toLowerCase() == 'warden')
-    {
+    else if(userType.value == 'principal' || userType.value == 'warden' || userType.value == 'messWarden'){
         let option = document.createElement('option');
         option.value = 'MITE';
         option.innerHTML = 'MITE';

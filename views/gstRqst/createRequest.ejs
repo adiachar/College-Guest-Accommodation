@@ -1,5 +1,5 @@
 <% layout('./layouts/boilerplate') %>
-<body>
+<div class="row col-12 mt-2 mb-5 ">
     <div class="filter"></div>
     <div class="inContainer" style="background-color: white; box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);">
         <form action="/home/createGuestRequest" method ="POST" novalidate class="needs-validation col-12 p-0">
@@ -20,8 +20,10 @@
                 <label for="to_id" class="form-label">Send This Request To:</label>
                 <select name="to_id" id="to_id" class="form-control" required>
                     <option value="" disabled selected >Select Hod</option>
-                    <% for(let to of upperLevelUser){%>
-                        <option value="<%= to.id %>"><%= to.name %> Sir - HOD <%= to.department.toString().toUpperCase() %></option>
+                    <% if(upperLevelUser) {%>
+                        <% for(let to of upperLevelUser){%>
+                            <option value="<%= to.id %>"><%= to.name %> Sir - HOD <%= to.department.toString().toUpperCase() %></option>
+                        <% } %>
                     <% } %>
                 </select>
                 <p class="form-text mt-4">Request will be sent to Principal with heigher level peoples approval</p>
@@ -29,6 +31,6 @@
             <button class="btn col-4 offset-4 mt-5 btn-success" style="color: white;">Submit</button>
         </form>
     </div>
-    <script src="/js/createGuestRequest.js"></script>
-</body>
+</div>
+
 

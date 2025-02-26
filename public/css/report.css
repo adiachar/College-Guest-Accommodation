@@ -1,0 +1,59 @@
+html {
+    font-size: 16px; /* Base font size */
+}
+
+@media (max-width: 600px) {
+    html {
+        font-size: 10px; /* Smaller font size for mobile */
+    }
+}
+
+body{
+    padding: 3rem;
+    margin: 0px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.report{
+    border: 1px solid rgba(0, 0, 0, 0.656);
+    width: 90vw;
+    height: 841.89px;
+    padding: 10px;
+    font-size: 1em;
+    max-width: 595.28px;
+}
+.report .header{
+    background-color: white;
+    color: orange;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.581);;
+}
+
+.report .logo{
+    height: 3rem;
+    width: 3rem;
+    margin: 10px;
+}
+
+.report h2{
+    margin: 1rem auto;
+    text-align: center;
+}
+
+.report h3{
+    text-align: center;
+}
+
+.arrival-dtl{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+

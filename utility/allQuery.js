@@ -19,38 +19,28 @@ class query{
         let month = String(date.getMonth() + 1).padStart(2, "0");
         let year = String(date.getFullYear());
         return `${year}-${month}-${day}`;
-        }
-    
+    }
 
-    async getUserById(id, table = 'user')
-    {   
+    async getUserById(id){   
         return new Promise((resolve, reject) => {
-            table = table.toLowerCase();
-            connection.query(`SELECT id, name, email, user_type, department FROM ${table} WHERE id = '${id}'`, (err, result) => {
-                if(err) 
-                {
+            connection.query(`SELECT id, name, email, userType, department FROM user WHERE id = '${id}'`, (err, result) => {
+                if(err) {
                     reject(err);
-                }
-                else
-                {
+                }else{
                     resolve(result[0]);
                 }
             });
         });
     }
 
-    async getUserByType(user_type){
+    async getUserByType(userType){
         return new Promise((resolve, reject) => {
-            connection.query(`SELECT id, name, email, user_type, department FROM user WHERE user_type = '${user_type}'`, (err, result) => {
-                if(err) 
-                {
+            connection.query(`SELECT id, name, email, userType, department FROM user WHERE userType = '${userType}'`, (err, result) => {
+                if(err) {
                     reject(err);
-                }
-                else if(result.length > 0)
-                {
+                }else if(result.length > 0){
                     resolve(result);
-                }
-                else{
+                }else{
                     resolve(false);
                 }
             });
@@ -64,10 +54,10 @@ class query{
             connection.query(q, (err, result) =>{
                 if(err){
                     reject(err);
-                }
-                else
-                {
-                   this.getUserById(id).then((user) =>{resolve(user);}).catch((err) =>{reject(err);});
+                }else{
+                   this.getUserById(id)
+                   .then((user) => resolve(user))
+                   .catch((err) => reject(err));
                 }
             });
         });
@@ -77,36 +67,29 @@ class query{
     {   
         return new Promise((resolve, reject) => {
             connection.query(`SELECT * FROM user WHERE email = ? AND password = ?`, [email, password], (err, result) => {
-                if(err) 
-                {
+                if(err) {
                     reject(err);
-                }
-                else if(result.length > 0 )
-                {
+                }else if(result.length > 0 ){
                     let user = result[0];
                     resolve(user);
-                }
-                else{
+                }else{
                     resolve('');
                 }
             });
         });
     }
 
-    async insertRequest(creator_id, to_id, numberOfGuests, reasonOfArrival, guest_name, guestInfo, vegNonveg, foodTime, arrivalDate, arrivalTime, leavingDate)
-    {  
-        let req_date = this.getDate();
+    async insertRequest(creator_id, hod_id, numberOfGuests, reasonOfArrival, guest_name, guestInfo, vegNonveg, foodTime, arrivalDate, arrivalTime, leavingDate){  
+        let createdDate = this.getDate();
         let req_id = this.getRandomId();
-        let qRequestTable = `INSERT INTO guestrequest(id, creator_id, to_id, numberOfGuests, reasonOfArrival, requestDate, statusMessage ) VALUES (?)`;
-        let values = [req_id, creator_id, to_id, numberOfGuests, reasonOfArrival, req_date, 'Request Created'];
+        let qRequestTable = `INSERT INTO guestrequest(id, creator_id, hod_id, numberOfGuests, reasonOfArrival, createdDate, statusMessage ) VALUES (?)`;
+        let values = [req_id, creator_id, hod_id, numberOfGuests, reasonOfArrival, createdDate, 'Request Created'];
         return new Promise((resolve, reject) =>{
             connection.query(qRequestTable, [values], async (err, result) =>{
-                if(err)
-                {
+                if(err){
+                    console.log("error in insertRequest query");
                     return reject(err);
-                }
-                else{
-    
+                }else{
                     await this.addGuest(0, numberOfGuests, req_id, guest_name, guestInfo, vegNonveg, foodTime, arrivalDate, arrivalTime, leavingDate)
                     .then((result) => resolve(result))
                     .catch((err)=> reject(err));
@@ -125,17 +108,14 @@ class query{
             
             try{
                 if(!Array.isArray(foodTime[i])){
-                    if(!Array.isArray(foodTime[i])){
-                        if(foodTime[i] === 'breakfast')food_time = 'B';
-                        if(foodTime[i] === 'lunch')food_time = 'L';
-                        if(foodTime[i] === 'dinner')food_time = 'D';
-                    }
-                }
-                else{
+                    if(foodTime[i] === 'breakfast')food_time = 'B';
+                    if(foodTime[i] === 'lunch')food_time = 'L';
+                    if(foodTime[i] === 'dinner')food_time = 'D';
+                }else{
                     for(let food of foodTime[i]){
-                        if(food == 'breakfast')food_time = food_time +'B';
-                        if(food == 'lunch')food_time = food_time +'L';
-                        if(food == 'dinner')food_time = food_time +'D';
+                        if(food == 'breakfast')food_time += 'B';
+                        if(food == 'lunch')food_time += 'L';
+                        if(food == 'dinner')food_time +='D';
                     }
                 }
                 
@@ -150,9 +130,10 @@ class query{
                 
                 let q = `INSERT INTO guest VALUES(?)`;
                 let values = [id, req_id, guest_name[i], guestInfo[i], vegNonveg[i], food_time, arrDate, arrTime, leavDate];
-                // console.log(q);
+                
                 connection.query(q, [values], async (err, res) =>{
                     if(err){
+                        console.log("error in the addGuest query");
                         return reject(err);
                     }
                     else{
@@ -162,41 +143,46 @@ class query{
                     }
                 });
             }
-            catch(err){reject(err);}
+            catch(err){
+                console.log("error in the addGuest query");
+                reject(err);
+            }
         });
     }
 
-    async getGuestRequestsByToId(toId)
-    {   
+    async getGuestRequestsByToId(toId, userType){  
         return new Promise((resolve, reject) =>{
-            let qGuestRequest = `SELECT r.requestDate, r.id, r.requestStatus, r.statusMessage, u.name, u.user_type, u.department FROM guestrequest r JOIN user u ON r.creator_id = u.id WHERE r.to_id='${toId}'`;
+            if(userType == "coordinator"){
+                userType = "creator";
+            }
+            let qGuestRequest = `SELECT r.createdDate, r.id, r.requestStatus, r.statusMessage, u.name, u.userType, u.department FROM guestrequest r JOIN user u ON r.creator_id = u.id WHERE r.${userType}_id='${toId}'`;
             connection. query(qGuestRequest, (error, result) =>{
-                if(error)
-                {
+                if(error){
+                    console.log("error in getGuestRequestByToId");
                     return reject(error);
-                }
-                else{
+                }else{
                     return resolve(result);
                 }
             });
         });
     }
 
-    async reqCount(Toid, userType){
+    async reqCount(toid, userType){
         return new Promise((resolve, reject) => {
             let qReqCount = "";
             if(userType == "hod"){
-                qReqCount = `SELECT COUNT(*) AS count FROM guestrequest WHERE requestStatus = "NHNPNW" AND to_id = "${Toid}";`;
+                qReqCount = `SELECT COUNT(*) AS count FROM guestrequest WHERE requestStatus = "NHNPNW" AND hod_id = "${toid}";`;
             }else if(userType == "principal"){
-                qReqCount = `SELECT COUNT(*) AS count FROM guestrequest WHERE requestStatus = "AHNPNW" AND to_id = "${Toid}";`;
+                qReqCount = `SELECT COUNT(*) AS count FROM guestrequest WHERE requestStatus = "AHNPNW" AND principal_id = "${toid}";`;
             }else if(userType == "warden"){
-                qReqCount = `SELECT COUNT(*) AS count from wardenGuestRequest w JOIN guestrequest g ON w.guestRequest_id = g.id WHERE warden_id = "${Toid}" AND g.requestStatus = "AHAPNW";`
+                qReqCount = `SELECT COUNT(*) AS count from guestrequest WHERE requestStatus = "AHAPNW" AND warden_id = "${toid}";`
             }else if(userType == "coordinator"){
-                resolve(0);
+                return resolve(0);
             }
             if(qReqCount){
                 connection.query(qReqCount, (err, result) => {
                     if(err){
+                        console.log("error in reqCount query");
                         reject(err);
                     }else{
                         resolve(result[0].count);
@@ -206,18 +192,19 @@ class query{
         });
     }
     
-    async getGuestRequestsById(id)
-    {   
+    async getGuestRequestsById(id){   
         return new Promise((resolve, reject) =>{
-            let qGuestRequest = `SELECT r.*, u.id AS fromId, u.name AS fromName, u.user_type, u.department FROM guestrequest r JOIN user u ON r.creator_id = u.id WHERE r.id='${id}'`;
+            let qGuestRequest = `SELECT r.*, u.id AS fromId, u.name AS fromName, u.userType, u.department FROM guestrequest r JOIN user u ON r.creator_id = u.id WHERE r.id='${id}'`;
             connection. query(qGuestRequest, (err, guestRequest) =>{
                 if(err){
+                    console.log("error in getGuestRequestById query");
                     return reject(err);
                 }
                 else{
                     let qGuest = `SELECT * FROM guest WHERE guestRequest_id='${id}'`;
                     connection.query(qGuest, (err, guest)=>{
                         if(err){
+                            console.log("error in guest query inside getGuestRequestById query");
                             return reject(err);
                         }
                         else{
@@ -229,33 +216,18 @@ class query{
         });
     }
 
-    async deleteGuestRequestById(id)
-    {
+    async deleteGuestRequestById(reqId, userId, userType){
+        if(userType == "coordinator"){
+            userType = "creator";
+        }
         return new Promise((resolve, reject) => {
-            let qGuest = `DELETE FROM guest WHERE guestRequest_id = '${id}';`;
-            let qWarden = `DELETE FROM wardenguestrequest WHERE guestRequest_id = '${id}';`
-            let qGuestRequest = `DELETE FROM guestrequest WHERE id = '${id}';`;
-
-            connection.query(qWarden, (err, result) => {
+            let qGuestRequest = `UPDATE guestrequest SET ${userType}_id = NULL WHERE ${userType}_id = '${userId}' AND id = '${reqId}';`;
+            connection.query(qGuestRequest, (err, result) => {
                 if(err){
+                    console.log("error in deleteGuestRequestById query");
                     reject(err);
-                }
-                else{
-                    connection.query(qGuest, (err, result) => {
-                        if(err){
-                            reject(err);
-                        }
-                        else{
-                            connection.query(qGuestRequest, (err, result) => {
-                                if(err){
-                                    reject(err);
-                                }
-                                else{
-                                    return resolve("request Deleted");
-                                }
-                            });
-                        }
-                    });
+                }else{
+                    resolve("request Deleted");
                 }
             });
         });
@@ -275,6 +247,7 @@ class query{
                 let qGuestRequest = `UPDATE guestrequest SET to_id = 'null', requestStatus='${sts}', statusMessage='Request Deleted' WHERE id='${reqId}'`;
                 connection. query(qGuestRequest, (err, result) =>{
                     if(err){
+                        console.log("error in deleteGuestRequestForToId query");
                         return reject(err);
                     }
                     else{
@@ -288,12 +261,12 @@ class query{
         });
     }
 
-    async getGuestRequestsByCreatorId(id)
-    {   
+    async getGuestRequestsByCreatorId(id){   
         return new Promise((resolve, reject) =>{
             let qGuestRequest = `SELECT * FROM guestrequest WHERE creator_id='${id}'`;
             connection. query(qGuestRequest, (err, guestRequest) =>{
                 if(err){
+                    console.log("error in getGuestRequestByCreatorId query");
                     return reject(err);
                 }
                 else{
@@ -306,9 +279,11 @@ class query{
     async rejectGuestRequest(req_id, sts, reasonForRejection){
         return new Promise((resolve, reject) => {
             let q = `UPDATE guestrequest SET requestStatus='${sts}', statusMessage='${reasonForRejection}' WHERE id='${req_id}'`;
-            // console.log(q);
             connection.query(q, (err, result) =>{
-                if(err){ return reject(err) }
+                if(err){ 
+                    console.log("error in rejectGuestRequest query");
+                    return reject(err) 
+                }
                 else{
                     return resolve(result);
                 }
@@ -319,22 +294,22 @@ class query{
 
     async approveGuestRequest(req_id, userType, sts){
         return new Promise((resolve, reject) => {
-            let qApprove = `UPDATE guestrequest SET requestStatus = ?, to_id = ? WHERE id = '${req_id}'`;
+            let approvalDate = this.getDate();
+            let qApprove = `UPDATE guestrequest SET requestStatus = ?, ${userType}_id = ?, approvalDate = ?, WHERE id = '${req_id}'`;
                 if(userType != "null"){
                     this.getUserByType(userType)
                     .then((user) =>{
                         if(user){
                             let id = user[0].id;
-                            connection.query(qApprove, [sts, id], (err, result) => {
+                            connection.query(qApprove, [sts, id, approvalDate], (err, result) => {
                                 if(err){
-                                reject(err);
+                                    reject(err);
                                 }
                                 else{
                                     resolve(result);
                                 }
                             });
-                        }
-                        else{
+                        }else{
                             reject('User Not Found!');
                         }
                 }).catch((err) => { throw err; });
@@ -342,43 +317,28 @@ class query{
         });
     }
 
-    async approveGuestRequestPrincipal(req_id, wardenDId, wardenFId, pId){
+    async approveGuestRequestPrincipal(req_id, wardenId, messWardenId, pId){
         return new Promise((resolve, reject) => {
-            const id1 = this.getRandomId();
-            const id2 = this.getRandomId();
-            const requestDate = this.getDate();
-            let values1 = [id1, wardenDId, req_id, 'GD', requestDate];
-            let values2 = [id2, wardenFId, req_id, 'GFD', requestDate];
-            let Aquery = "INSERT INTO wardenGuestRequest VALUES(?)";
-            connection.query(Aquery, [values1], (err, result) => {
-                if(err){
-                    return reject(err);
+            qApprove = `UPDATE guestrequest SET warden_id = '${wardenId}', messWarden_id = '${messWardenId}' WHERE id = '${req_id}'`;
+            connection.query(qApprove, (error, result) => {
+                if(error){
+                    console.log("error in approveGuestRequestPrincipal query");
+                    reject(error);
                 }else{
-                    connection.query(Aquery, [values2], async (err, result) => {
-                        if(err){
-                            // console.log("in query err2");
-                            return reject(err);
-                        }else{
-                            // console.log("in resolve of guest request");
-                            this.approveGuestRequest(req_id, "principal", "AHAPNW");
-                            return resolve(result);
-                        }
-                    });
+                    resolve("success");
                 }
             });
-        })
+        });
     }
 
     async getGuestRequestsForWarden(userId){
         return new Promise((resolve, reject) => {
-            let q = `SELECT w.*, g.* FROM wardenguestrequest w JOIN guestrequest g ON w.guestRequest_id = g.id WHERE warden_id = '${userId}'`;
-            connection.query(q, async (err, data) => {
-                if(err){
-                    throw err;
-                }else{
-                    return resolve(data);
-                }
-            });
+            this.getGuestRequestsByToId(userId, "warden")
+            .then((result) => {
+                resolve(result);
+            }).catch((error) => {
+                reject(error);
+            })
         });
     }
 }
