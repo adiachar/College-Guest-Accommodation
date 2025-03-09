@@ -82,9 +82,9 @@ class query{
     async insertRequest(creator_id, hod_id, numberOfGuests, reasonOfArrival, guest_name, guestInfo, vegNonveg, foodTime, arrivalDate, arrivalTime, leavingDate){  
         let createdDate = this.getDate();
         let req_id = this.getRandomId();
-        let qRequestTable = `INSERT INTO guestrequest(id, creator_id, hod_id, numberOfGuests, reasonOfArrival, createdDate, statusMessage ) VALUES (?)`;
-        let values = [req_id, creator_id, hod_id, numberOfGuests, reasonOfArrival, createdDate, 'Request Created'];
-        return new Promise((resolve, reject) =>{
+        let qRequestTable = `INSERT INTO guestrequest(id, creator_id, hod_id, numberOfGuests, reasonOfArrival, createdDate ) VALUES (?)`;
+        let values = [req_id, creator_id, hod_id, numberOfGuests, reasonOfArrival, createdDate];
+        return new Promise((resolve, reject) =>{  
             connection.query(qRequestTable, [values], async (err, result) =>{
                 if(err){
                     console.log("error in insertRequest query");
@@ -155,7 +155,7 @@ class query{
             if(userType == "coordinator"){
                 userType = "creator";
             }
-            let qGuestRequest = `SELECT r.createdDate, r.id, r.requestStatus, r.statusMessage, u.name, u.userType, u.department FROM guestrequest r JOIN user u ON r.creator_id = u.id WHERE r.${userType}_id='${toId}'`;
+            let qGuestRequest = `SELECT r.createdDate, r.id, r.requestStatus, u.name, u.userType, u.department FROM guestrequest r JOIN user u ON r.creator_id = u.id WHERE r.${userType}_id='${toId}'`;
             connection. query(qGuestRequest, (error, result) =>{
                 if(error){
                     console.log("error in getGuestRequestByToId");
@@ -178,8 +178,8 @@ class query{
                 qReqCount = `SELECT COUNT(*) AS count from guestrequest WHERE requestStatus = "AHAPNW" AND warden_id = "${toid}";`
             }else if(userType == "coordinator"){
                 return resolve(0);
-            }else if(userType == "messWarden"){
-                qReqCount = `SELECT COUNT(*) AS count from guestrequest WHERE requestStatus = "AHAPAW" AND messWarden_id = "${toid}";`
+            }else if(userType == "messManager"){
+                qReqCount = `SELECT COUNT(*) AS count from guestrequest WHERE requestStatus = "AHAPAW" AND messManager_id = "${toid}";`
             }else{
                 return resolve(0);
             }
@@ -248,7 +248,7 @@ class query{
                 sts = "RW";
             }
             if(typeof(sts) != null){
-                let qGuestRequest = `UPDATE guestrequest SET to_id = 'null', requestStatus='${sts}', statusMessage='Request Deleted' WHERE id='${reqId}'`;
+                let qGuestRequest = `UPDATE guestrequest SET to_id = 'null', requestStatus='${sts}', WHERE id='${reqId}'`;
                 connection. query(qGuestRequest, (err, result) =>{
                     if(err){
                         console.log("error in deleteGuestRequestForToId query");
@@ -304,7 +304,7 @@ class query{
                     if(user){
                         let qApprove = `UPDATE guestrequest SET requestStatus = ?, principal_id = ?, hodApprovalDate = ? WHERE id = '${req_id}'`;
                         let id = user[0].id;
-                        connection.query(qApprove, ['AHNPNW', id, hodApprovalDate], (err, result) => {
+                        connection.query(qApprove, ['AHNPNWNM', id, hodApprovalDate], (err, result) => {
                             if(err){
                                 reject(err);
                             }
@@ -344,10 +344,10 @@ class query{
         });
     }
 
-    async approveGuestRequestPrincipal(req_id, wardenId, messWardenId, pId){
+    async approveGuestRequestPrincipal(req_id, wardenId, messManagerId, pId){
         return new Promise((resolve, reject) => {
             let principalApprovalDate = this.getDate();
-            let qApprove = `UPDATE guestrequest SET warden_id = '${wardenId}', messWarden_id = '${messWardenId}', requestStatus = 'AHAPNW', principalApprovalDate = '${principalApprovalDate}' WHERE id = '${req_id}'`;
+            let qApprove = `UPDATE guestrequest SET warden_id = '${wardenId}', messManager_id = '${messManagerId}', requestStatus = 'AHAPNWNM', principalApprovalDate = '${principalApprovalDate}' WHERE id = '${req_id}'`;
             connection.query(qApprove, (error, result) => {
                 if(error){
                     console.log("error in approveGuestRequestPrincipal query");
