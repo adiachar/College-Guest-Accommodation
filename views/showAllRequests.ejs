@@ -1,7 +1,7 @@
 <% layout('layouts/boilerplate.ejs') %>
 
 <div class="showAllRequest-container col-11 p-2">
-    <% if(user.userType != "warden" && user.userType != "messWarden") {%>
+    <% if(user.userType != "warden" && user.userType != "messManager") {%>
         <% if(guestRequestData.length == 0) {%>
             <h5 class="align-text-center">No Request</h5>
         <% } %>
@@ -34,13 +34,13 @@
             </div>
         <% } %>
     <% } %>
-    <% if(user.userType == "warden" || user.userType == "messWarden") {%>
+    <% if(user.userType == "warden" || user.userType == "messManager") {%>
         <% if(guestRequestData.length == 0) {%>
             <h5 class="align-text-center">No Request</h5>
         <% } %>
         <% if(guestRequestData.length != 0) {%>
             <% for(let dta of guestRequestData) {%>
-                <% if(user.userType == "messWarden" && dta.requestStatus == "AHAPNW") {%>
+                <% if(user.userType == "messManager" && dta.requestStatus == "AHAPNW") {%>
                     <h5 class="align-text-center">No Request</h5>
                 <% }else {%>
                     <div class="row border-bottom border-black showAllRequestDetails m-2">

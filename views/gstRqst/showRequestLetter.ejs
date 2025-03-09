@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="letter col-11 shadow p-5 rounded">
-        <% if(user.userType !== "warden" && user.userType !== "messWarden") {%>
+        <% if(user.userType !== "warden" && user.userType !== "messManager") {%>
             <div class="from mb-3 row">
                 <h4>From :</h4>
                 <p class="mb-1"><%= guestRequest.fromName %></p>
@@ -200,7 +200,7 @@
                     <% } %>
                 </div>
         <% } %>
-        <% if(user.userType == "messWarden") {%>
+        <% if(user.userType == "messManager") {%>
             <h2 class="mb-4"><u>Food Details For Guest Accommodation: </u></h2>
             <% for(let gst of guest){%>
             <div class="row border m-2">
