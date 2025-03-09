@@ -72,5 +72,6 @@ module.exports.createGuestRequest = async (req, res) =>{
         let confirmation = {};
         confirmation.status = "rejected";
         confirmation.message = "Guest Request was Not Created Due to some error in the Database";
-        res.render( "confirmation", {confirmation});});
+        res.render( "confirmation", {confirmation});
+    });
 }

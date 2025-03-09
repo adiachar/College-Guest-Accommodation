@@ -286,14 +286,17 @@ footer{
 }
 
 .rejected{
+    color: white;
     background-color: rgb(180, 0, 0);
 }
 
 .pending{
+    color: white;
     background-color: rgb(156, 164, 0);
 }
 
 .accepted{
+    color: white;
     background-color: green;
 }
 

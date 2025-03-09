@@ -19,20 +19,20 @@ module.exports.guestRequestLetter = async (req, res) =>{
             guestRequest.to = toUser;
             query.getUserByType('warden')
             .then((wardens)=>{
-                query.getUserByType('messWarden')
-                .then((messWardens)=>{
-                    res.render("gstRqst/showRequestLetter.ejs", {guestRequest, guest, wardens, messWardens});
+                query.getUserByType('messManager')
+                .then((messManagers)=>{
+                    res.render("gstRqst/showRequestLetter.ejs", {guestRequest, guest, wardens, messManagers});
                 }).catch((err) =>{throw err});
             }).catch((err) =>{throw err});
         }).catch((err) => {throw err});
     }).catch((err) => {throw err});
 }
 
-module.exports.guestRequestDelete = async (req, res)=>{
+module.exports.guestRequestDeleteForId = async (req, res)=>{
     let {reqId} = req.params;
     let userId = res.locals.user.id;
     let userType = res.locals.user.userType;
-    query.deleteGuestRequestById(reqId, userId, userType)
+    query.deleteGuestRequestForId(reqId, userId, userType)
     .then((result) => {
         let confirmation = {};
         confirmation.status = "successfull";
@@ -50,20 +50,6 @@ module.exports.guestRequestReport = (req, res) => {
         console.log({guestRequest, guest});
         res.render("report.ejs", {guestRequest, guest});
     });
-}
-
-module.exports.guestRequestDeleteForToId = async (req, res) => {
-    const {reqId, toId} = req.params;
-    if(res.locals.user.id === toId){
-        query.deleteGuestRequestById(reqId, toId,  res.locals.user.userType)
-        .then((result) => {
-            console.log(result);
-            let confirmation = {};
-            confirmation.status = "successfull";
-            confirmation.message = result;
-            res.render('confirmation.ejs', {confirmation});
-        }).catch((err) => {throw err;});
-    }
 }
 
 module.exports.guestRequestLetterForWarden = async (req, res) => {
@@ -114,40 +100,17 @@ module.exports.guestRequestApproveWarden = async (req, res) => {
     }).catch((err) => {throw err});
 }
 
-module.exports.guestRequestRejectPage = (req, res) =>{
+module.exports.guestRequestApproveMessManager = async (req, res) => {
     let {reqId} = req.params;
-    res.render("gstRqst/rejectGuestRequest", {reqId});
-}
-
-module.exports.guestRequestReject = async (req, res) =>{
-    let {reqId} = req.params;
-    let {reasonForRejection} = req.body;
-    let sts;
-    console.log("in guest Reject");
-    if(res.locals.user.userType == 'hod'){
-        sts = 'RH';
-        reject(sts);
-    }
-    else if(res.locals.user.userType == 'principal'){
-        sts = 'RP';
-        reject(sts);
-    }
-    else if(res.locals.user.userType == 'warden'){
-        sts = 'RW';
-        reject(sts);
-    }
-    
-    function reject(sts){
-        query.rejectGuestRequest(reqId, sts, reasonForRejection)
-        .then((result) => {
-            let confirmation = {};
-            confirmation.status = "successfull";
-            confirmation.message = "Request Rejected";
-            res.render("confirmation.ejs", {confirmation});
-        }).catch((err) => {throw new ExpressError(400, err);
-
-        });
-    }
+    query.approveGuestRequestMessManager(reqId)
+    .then((result) => {
+        let confirmation = {};
+        confirmation.status = "successfull";
+        confirmation.message = "Request Status Approved";
+        res.render('confirmation.ejs', {confirmation});
+    }).catch((err) => {
+        console.log(err);
+    });
 }
 
 module.exports.guestRequestApprovePrincipal = async(req, res) =>{
@@ -162,5 +125,38 @@ module.exports.guestRequestApprovePrincipal = async(req, res) =>{
     }).catch((err) => {
         console.log(err);
         throw new ExpressError(400, err);
+    });
+}
+
+module.exports.guestRequestRejectPage = (req, res) =>{
+    let {reqId} = req.params;
+    res.render("gstRqst/rejectGuestRequest", {reqId});
+}
+
+module.exports.guestRequestReject = async (req, res) =>{
+    let {reqId} = req.params;
+    let rejectedBy_id = res.locals.user.id;
+    let {reasonForRejection} = req.body;
+    let sts;
+    if(res.locals.user.userType == 'hod'){
+        sts = 'RH';
+    }
+    else if(res.locals.user.userType == 'principal'){
+        sts = 'RP';
+    }
+    else if(res.locals.user.userType == 'warden'){
+        sts = 'RW';
+    }
+    else{
+        throw new ExpressError(400, "No user Type");
+    }
+
+    query.rejectGuestRequest(reqId, rejectedBy_id, sts, reasonForRejection)
+        .then((result) => {
+            let confirmation = {};
+            confirmation.status = "successfull";
+            confirmation.message = "Request Rejected";
+            res.render("confirmation.ejs", {confirmation});
+        }).catch((err) => {throw new ExpressError(400, err);
     });
 }

@@ -53,28 +53,28 @@
                     </div>
                 <% } %>
             <% } %>
-            <% if(guestRequest.fromId !== user.id && user.userType !== 'principal') {%>
-            <div class="requestStatus row align-items-center">
-                
-                <% if(guestRequest.requestStatus.toString()[0] != "R") {%>
-                    <form action="/guestRequest/<%= guestRequest.id %>/reject" method="GET" class="col-2 offset-7" class="reject">
-                        <button class="btn btn-danger d-inline col-12">Reject</button>
-                    </form>
-                <% } %>
-                <% if(guestRequest.requestStatus.toString()[0] == "R") {%>
-                    <div class="col-2 offset-7">
-                        <p style="color: rgb(200, 0, 0)" class="btn col-12 d-inline ms-5">Rejected</p>
-                    </div>
-                <% } %>
-                <% if(guestRequest.requestStatus.toString()[0] != "A") {%>
-                    <form action="/guestRequest/<%= guestRequest.id %>/approve" method="POST" class="col-2" class="approve">
-                        <button class="btn btn-success d-inline col-12">Approve</button>
-                    </form>
-                <% } %>
-                <% if(guestRequest.requestStatus.toString()[0] == "A") {%>
-                    <p style="color: rgb(0, 100, 0); border: 1px solid rgb(0, 100, 0);" class="btn col-2 m-1">Approved</p>
-                <% } %>
-            </div>
+            <% if(user.userType == 'hod') {%>
+                <div class="requestStatus row align-items-center">
+                    
+                    <% if(guestRequest.requestStatus.toString()[0] != "R") {%>
+                        <form action="/guestRequest/<%= guestRequest.id %>/reject" method="GET" class="col-2 offset-7" class="reject">
+                            <button class="btn btn-danger d-inline col-12">Reject</button>
+                        </form>
+                    <% } %>
+                    <% if(guestRequest.requestStatus.toString()[0] == "R") {%>
+                        <div class="col-2 offset-7">
+                            <p style="color: rgb(200, 0, 0)" class="btn col-12 d-inline ms-5">Rejected</p>
+                        </div>
+                    <% } %>
+                    <% if(guestRequest.requestStatus.toString()[0] != "A") {%>
+                        <form action="/guestRequest/<%= guestRequest.id %>/approve/hod" method="POST" class="col-2" class="approve">
+                            <button class="btn btn-success d-inline col-12">Approve</button>
+                        </form>
+                    <% } %>
+                    <% if(guestRequest.requestStatus.toString()[0] == "A") {%>
+                        <p style="color: rgb(0, 100, 0); border: 1px solid rgb(0, 100, 0);" class="btn col-2 m-1">Approved</p>
+                    <% } %>
+                </div>
             <% } %>
             <% if(user.userType == 'principal') {%>
                 <form action="/guestRequest/<%= guestRequest.id %>/approve/principal" method="POST" class="m-1" id="acceptForm">
@@ -127,7 +127,7 @@
                             <label for="warden" class="d-inline col-2">Send Food Details To :</label>
                             <select name="wardenId2" id="warden" required class="form-control">
                                 <option value="" disabled selected >select warden</option>
-                                <% for(warden of messWardens) {%>
+                                <% for(warden of messManagers) {%>
                                     <option value="<%= warden.id %>"><%= warden.name %></option>
                                 <% } %>
                             </select>
@@ -159,7 +159,6 @@
                             acptForm.reportValidity();
                         }
                     });">Approve and Submit</button>
-
                     <% } %>
                     <% if(guestRequest.requestStatus.toString()[2] == "A") {%>
                         <p style="color: rgb(0, 100, 0)" class="btn col-2 ms-5">Approved</p>
@@ -168,37 +167,37 @@
             <% } %>
         <% } %>
         <% if(user.userType == "warden") {%>
-                <h2 class="mb-4"><u>Guest Accommodation Request:</u></h2>
-                <% for(let gst of guest){%>
-                    <div class="row border mb-2">
-                        <p>Name : <b><%= gst.name %></b></p>
-                        <p>Arrival Date : <b><%= gst.arrivalDate.toString().split("00:00:00")[0] %></b></p>
-                        <p>Arrival Time : <b><%= gst.arrivalTime %></b></p>
-                        <p>Leaving Date : <b><%= gst.leavingDate.toString().split("00:00:00")[0] %></b></p>
+            <h2 class="mb-4"><u>Guest Accommodation Request:</u></h2>
+            <% for(let gst of guest){%>
+                <div class="row border mb-2">
+                    <p>Name : <b><%= gst.name %></b></p>
+                    <p>Arrival Date : <b><%= gst.arrivalDate.toString().split("00:00:00")[0] %></b></p>
+                    <p>Arrival Time : <b><%= gst.arrivalTime %></b></p>
+                    <p>Leaving Date : <b><%= gst.leavingDate.toString().split("00:00:00")[0] %></b></p>
+                </div>
+            <% } %>
+            <div class="row">  
+                <% if(guestRequest.requestStatus.toString()[0] !== "R") {%>
+                    <form action="/guestRequest/<%= guestRequest.id %>/reject" method="GET" class="col-2 offset-8" >
+                        <button class="btn btn-danger d-inline col-12">Reject</button>
+                    </form>
+                <% } %>
+                <% if(guestRequest.requestStatus.toString()[0] == "R") {%>
+                    <div class="col-2 offset-7">
+                        <p style="color: rgb(200, 0, 0)" class="btn col-12 d-inline ms-5">Rejected</p>
                     </div>
                 <% } %>
-                <div class="row">  
-                    <% if(guestRequest.requestStatus.toString()[0] !== "R") {%>
-                        <form action="/guestRequest/<%= guestRequest.id %>/reject" method="GET" class="col-2 offset-8" >
-                            <button class="btn btn-danger d-inline col-12">Reject</button>
-                        </form>
-                    <% } %>
-                    <% if(guestRequest.requestStatus.toString()[0] == "R") {%>
-                        <div class="col-2 offset-7">
-                            <p style="color: rgb(200, 0, 0)" class="btn col-12 d-inline ms-5">Rejected</p>
-                        </div>
-                    <% } %>
-                    <% if(guestRequest.requestStatus.toString()[4] === "A") {%>
-                        <form action="/guestRequest/<%= guestRequest.id %>/approve" method="POST" class="col-2">
-                            <button class="btn btn-success d-inline col-12">Approve</button>
-                        </form>
-                    <% } %>
-                    <% if(guestRequest.requestStatus.toString()[4] !== "A") {%>
-                        <div class="col-2">
-                            <p style="color: rgb(0, 142, 2)" class="btn col-12 d-inline ms-5">Approved</p>
-                        </div>
-                    <% } %>
-                </div>
+                <% if(guestRequest.requestStatus.toString()[4] !== "A") {%>
+                    <form action="/guestRequest/<%= guestRequest.id %>/allocateRoom" method="POST" class="col-2">
+                        <button style="color: rgb(13, 13, 13); background-color: rgb(176, 176, 176);" class="btn d-inline col-12">Allocate Room</button>
+                    </form>
+                <% } %>
+                <% if(guestRequest.requestStatus.toString()[4] === "A") {%>
+                    <div class="col-2">
+                        <p style="color: rgb(0, 142, 2)" class="btn col-12 d-inline ms-5">Approved</p>
+                    </div>
+                <% } %>
+            </div>
         <% } %>
         <% if(user.userType == "messManager") {%>
             <h2 class="mb-4"><u>Food Details For Guest Accommodation: </u></h2>
@@ -227,17 +226,17 @@
                         <% } %>  </b>
                     </p>
                 </div>
-                <% if(guestRequest.requestStatus.toString()[4] !== "A") {%>
-                    <form action="/guestRequest/<%= guestRequest.id %>/approve" method="POST" class="col-2">
-                        <button class="btn btn-success d-inline col-12">Approve</button>
-                    </form>
-                <% } %>
-                <% if(guestRequest.requestStatus.toString()[4] === "A") {%>
-                    <div class="col-2">
-                        <p style="color: rgb(0, 142, 2)" class="btn col-12 d-inline ms-5">Approved</p>
-                    </div>
-                <% } %>
             </div>
+            <% } %>
+            <% if(guestRequest.requestStatus.toString()[6] !== "A") {%>
+                <form action="/guestRequest/<%= guestRequest.id %>/approve/messManager" method="POST" class="col-12">
+                    <button class="btn btn-success d-block ">Approve</button>
+                </form>
+            <% } %>
+            <% if(guestRequest.requestStatus.toString()[6] === "A") {%>
+                <div class="col-12">
+                    <p style="color: rgb(0, 142, 2); border: 1px solid rgba(75, 75, 75, 0.182);" class="btn mt-2 col-3">Approved</p>
+                </div>
             <% } %>
         <% } %>
     </div>

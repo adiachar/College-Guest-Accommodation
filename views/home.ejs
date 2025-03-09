@@ -3,7 +3,7 @@
 
 <body>
     <% if(nav !== "createRequest" && nav !== "account") {%>
-    <div class="caption"><h4>Guestify</h4><p class="mite">Welcome to MITE</p></div>
+        <div class="caption"><h4>Guestify</h4><p class="mite">Welcome to MITE</p></div>
     <% } %>
     <!-- request for createRequest -->
     <% if(nav == "createRequest") { %>
@@ -24,7 +24,7 @@
         <div class="account-body">
             <p class="account-text"><b> Name : </b><%= user.name %></p>
             <p class="account-text"><b> Email : </b><%= user.email %></p>
-            <p class="account-text"><b>Working As : </b><%= user.user_type %></p>
+            <p class="account-text"><b>Working As : </b><%= user.userType %></p>
             <p class="account-text"><b>Department : </b><%= user.department %></p>
             <form action="#">
                 <button class="edit-btn">Edit Account</button>

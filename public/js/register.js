@@ -39,7 +39,7 @@ userType.addEventListener("change", () =>{
             department.appendChild(optn);
         }
     }
-    else if(userType.value == 'principal' || userType.value == 'warden' || userType.value == 'messWarden'){
+    else if(userType.value == 'principal' || userType.value == 'warden' || userType.value == 'messManager'){
         let option = document.createElement('option');
         option.value = 'MITE';
         option.innerHTML = 'MITE';

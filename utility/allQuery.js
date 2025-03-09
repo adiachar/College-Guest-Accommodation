@@ -220,7 +220,7 @@ class query{
         });
     }
 
-    async deleteGuestRequestById(reqId, userId, userType){
+    async deleteGuestRequestForId(reqId, userId, userType){
         if(userType == "coordinator"){
             userType = "creator";
         }
@@ -234,34 +234,6 @@ class query{
                     resolve("request Deleted");
                 }
             });
-        });
-    }
-
-    async deleteGuestRequestForToId(reqId, user_type){
-        return new Promise((resolve, reject) => {
-            let sts = "";
-            if(user_type == "hod"){
-                sts = "RH";
-            }else if(user_type == "principal"){
-                sts = "RP";
-            }else if(user_type == "warden"){
-                sts = "RW";
-            }
-            if(typeof(sts) != null){
-                let qGuestRequest = `UPDATE guestrequest SET to_id = 'null', requestStatus='${sts}', WHERE id='${reqId}'`;
-                connection. query(qGuestRequest, (err, result) =>{
-                    if(err){
-                        console.log("error in deleteGuestRequestForToId query");
-                        return reject(err);
-                    }
-                    else{
-                        return resolve("Request Deleted");
-                    }
-                });
-            }else{
-                reject("user type incorrect");
-            }
-            
         });
     }
 
@@ -280,9 +252,10 @@ class query{
         });
     }
 
-    async rejectGuestRequest(req_id, sts, reasonForRejection){
+    async rejectGuestRequest(req_id, rejectedBy_id, sts, reasonForRejection){
+        let rejectedDate = this.getDate();
         return new Promise((resolve, reject) => {
-            let q = `UPDATE guestrequest SET requestStatus='${sts}', statusMessage='${reasonForRejection}' WHERE id='${req_id}'`;
+            let q = `UPDATE guestrequest SET requestStatus='${sts}', rejectedBy_id = '${rejectedBy_id}', rejectedDate = '${rejectedDate}', statusMessage='${reasonForRejection}' WHERE id='${req_id}'`;
             connection.query(q, (err, result) =>{
                 if(err){ 
                     console.log("error in rejectGuestRequest query");
@@ -293,7 +266,6 @@ class query{
                 }
             });
         })
-        
     }
 
     async approveGuestRequestHod(req_id){
@@ -332,7 +304,7 @@ class query{
                     for(let key in roomData){
                         let hostelAllocateQry = `INSERT INTO hostel(id, guest_id, allocatedDate, allocatedBy, roomNo, block) VALUES(?)`;
                         let values = [this.getRandomId(), key, this.getDate(), warden_id, roomData[key].roomNo, roomData[key].block];
-                        connection.query(hostelAllocateQry, values, (err, result) => {
+                        connection.query(hostelAllocateQry, [values], (err, result) => {
                             if(err){
                                 return reject(err);
                             }
@@ -357,6 +329,21 @@ class query{
                 }
             });
         });
+    }
+
+    async approveGuestRequestMessManager(req_id){
+        return new Promise((resolve, reject) => {
+            let messManagerApprovalDate = this.getDate();
+            let qApprove = `UPDATE guestrequest SET requestStatus = ?, messManagerApprovalDate = ? WHERE id = '${req_id}'`;
+            connection.query(qApprove, ['AHAPAWAM', messManagerApprovalDate], (err, result) => {
+                if(err){
+                    reject(err);
+                }
+                else{
+                    resolve(result);
+                }
+            });
+        })
     }
 }
 
