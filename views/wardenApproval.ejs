@@ -1,0 +1,36 @@
+<% layout('./layouts/boilerplate') %>
+<div class="col-10 offset-0 border rounded p-5" style="background-color: white;">
+    <h1>Room Allocation For Guest</h1>
+    <form method="POST" action="/guestRequest/<%= guestRequest.id %>/approve/warden">
+        <% for(let gst of guest) {%>
+            <div class="col-12 border p-2 mb-4">
+                <div class="col-12">
+                    <p>Name : <b><%= gst.name %></b></p>
+                    <p>Arrival Date : <b><%= gst.arrivalDate.toString().split("00:00:00")[0] %></b></p>
+                    <p>Arrival Time : <b><%= gst.arrivalTime %></b></p>
+                    <p>Leaving Date : <b><%= gst.leavingDate.toString().split("00:00:00")[0] %></b></p>
+                </div>
+                <label for="block" class="form-label">Block :</label>
+                <select name=<%= `${gst.id}[block]` %> id="block" class="form-control" required>
+                    <option value="B1">B1</option>
+                    <option value="B2">B2</option>
+                    <option value="B3">B3</option>
+                    <option value="B4">B4</option>
+                    <option value="G1">G1</option>
+                    <option value="G2">G2</option>
+                    <option value="G3">G3</option>
+                </select>
+                <label for="roomNo" class="form-label">Room Number: </label>
+                <input type="number" min="100" max="700" class="form-control" name=<%= `${gst.id}[roomNo]` %> id="roomNo" required>
+            </div>
+        <% } %>
+        <button id="submit" class="btn btn-success mt-3" style="display: block; margin: 0 auto">Save and Approve</button>
+    </form>
+</div>
+<script>
+    let form = document.querySelector('form');
+    let btn = document.querySelector('button');
+    btn.addEventListener('click', () => {
+        form.submit();
+    });
+</script>

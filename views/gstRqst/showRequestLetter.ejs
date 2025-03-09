@@ -8,40 +8,40 @@
     <link rel="stylesheet" href="/css/showRequestLetter.css">
 </head>
 <body>
-    <div class="letter col-10 shadow p-5 rounded">
-        <% if(user.user_type !== "warden") {%>
+    <div class="letter col-11 shadow p-5 rounded">
+        <% if(user.userType !== "warden" && user.userType !== "messWarden") {%>
             <div class="from mb-3 row">
                 <h4>From :</h4>
                 <p class="mb-1"><%= guestRequest.fromName %></p>
-                <p class="mb-1"><%= guestRequest.user_type.toString().toUpperCase() %> of <%= guestRequest.department.toString().toUpperCase() %> department</p>
+                <p class="mb-1"><%= guestRequest.userType.toString().toUpperCase() %> of <%= guestRequest.department.toString().toUpperCase() %> department</p>
                 <p class="m-0">Mangalore Institute Of Technology And Engineering <br> Moodbidre</p>
             </div>
             <% if(guestRequest.to){%>
                 <div class="to mb-5 row">
-                    <% if( guestRequest.to.user_type != 'principal') { %>
+                    <% if( guestRequest.to.userType != 'principal') { %>
                     <h4>To :</h4>
                     <p class="mb-1"><%= guestRequest.to.name %></p>
-                    <p class="mb-1"><%= guestRequest.to.user_type.toString().toUpperCase() %> of <%= guestRequest.to.department.toString().toUpperCase() %> department</p>
+                    <p class="mb-1"><%= guestRequest.to.userType.toString().toUpperCase() %> of <%= guestRequest.to.department.toString().toUpperCase() %> department</p>
                     <p class="m-0">Mangalore Institute Of Technology And Engineering <br> Moodbidre</p>
                     <% } %>
 
-                    <% if( guestRequest.to.user_type == 'principal') { %>
+                    <% if( guestRequest.to.userType == 'principal') { %>
                     <h4>To :</h4>
                     <p class="mb-1"><%= guestRequest.to.name %></p>
-                    <p class="mb-1"><%= guestRequest.to.user_type.toString().toUpperCase() %></p>
+                    <p class="mb-1"><%= guestRequest.to.userType.toString().toUpperCase() %></p>
                     <p class="m-0">Mangalore Institute Of Technology And Engineering <br> Moodbidre</p>
                     <% } %>
                 </div>
             <% } %>
             <div class="date mb-5 row">
-                <h6><%= guestRequest.requestDate.toString().split("00:00:00")[0] %></h6>
+                <h6><%= guestRequest.createdDate.toString().split("00:00:00")[0] %></h6>
             </div>
             <div class="subject mb-5">
                 <h5 class="mb-3 d-inline">Subject :</h5><p class="d-inline ms-2" style="font-weight: 500; font-size: 17px; color: rgba(0, 0, 0, 0.864);">Request For Guest Accomodation In Our College</p>
                 <p class="mt-4"><%= guestRequest.reasonOfArrival %></p>
             </div>
             <hr>
-            <% if(user.user_type !== "principal") {%>
+            <% if(user.userType !== "principal") {%>
                 <h5 class="mb-3 mt-5 ms-1">Guest's Arriving</h5>
                 <% for( let gst of guest ) {%>
                     <div class="row rounded border mb-3 p-2 m-1">
@@ -53,10 +53,10 @@
                     </div>
                 <% } %>
             <% } %>
-            <% if(guestRequest.fromId !== user.id && user.user_type !== 'principal') {%>
+            <% if(guestRequest.fromId !== user.id && user.userType !== 'principal') {%>
             <div class="requestStatus row align-items-center">
                 
-                <% if(guestRequest.requestStatus.toString()[0] !== "R") {%>
+                <% if(guestRequest.requestStatus.toString()[0] != "R") {%>
                     <form action="/guestRequest/<%= guestRequest.id %>/reject" method="GET" class="col-2 offset-7" class="reject">
                         <button class="btn btn-danger d-inline col-12">Reject</button>
                     </form>
@@ -66,12 +66,17 @@
                         <p style="color: rgb(200, 0, 0)" class="btn col-12 d-inline ms-5">Rejected</p>
                     </div>
                 <% } %>
-                <form action="/guestRequest/<%= guestRequest.id %>/approve" method="POST" class="col-2" class="approve">
-                    <button class="btn btn-success d-inline col-12">Approve</button>
-                </form>
+                <% if(guestRequest.requestStatus.toString()[0] != "A") {%>
+                    <form action="/guestRequest/<%= guestRequest.id %>/approve" method="POST" class="col-2" class="approve">
+                        <button class="btn btn-success d-inline col-12">Approve</button>
+                    </form>
+                <% } %>
+                <% if(guestRequest.requestStatus.toString()[0] == "A") {%>
+                    <p style="color: rgb(0, 100, 0); border: 1px solid rgb(0, 100, 0);" class="btn col-2 m-1">Approved</p>
+                <% } %>
             </div>
             <% } %>
-            <% if(user.user_type == 'principal') {%>
+            <% if(user.userType == 'principal') {%>
                 <form action="/guestRequest/<%= guestRequest.id %>/approve/principal" method="POST" class="m-1" id="acceptForm">
                     <div class="guestInfo mb-5 m-1 row">
                         <p class="mt-5 d-block" style="font-weight: 500; font-size: 20px; color: rgba(0, 0, 0, 0.864);">Guest Details :</p>
@@ -122,7 +127,7 @@
                             <label for="warden" class="d-inline col-2">Send Food Details To :</label>
                             <select name="wardenId2" id="warden" required class="form-control">
                                 <option value="" disabled selected >select warden</option>
-                                <% for(warden of wardens) {%>
+                                <% for(warden of messWardens) {%>
                                     <option value="<%= warden.id %>"><%= warden.name %></option>
                                 <% } %>
                             </select>
@@ -130,7 +135,6 @@
                     </div>
                 </form>
                 <div class="row justify-content-end">
-                    
                     <% if(guestRequest.requestStatus.toString()[0] !== "R") {%>
                         <form action="/guestRequest/<%= guestRequest.id %>/reject" method="GET" class="col-2">
                             <button type="submit" class="btn btn-danger col-12">Reject</button>
@@ -163,8 +167,7 @@
                 </div>
             <% } %>
         <% } %>
-        <% if(user.user_type == "warden") {%>
-            <% if(reqType == "GD") {%>
+        <% if(user.userType == "warden") {%>
                 <h2 class="mb-4"><u>Guest Accommodation Request:</u></h2>
                 <% for(let gst of guest){%>
                     <div class="row border mb-2">
@@ -174,8 +177,7 @@
                         <p>Leaving Date : <b><%= gst.leavingDate.toString().split("00:00:00")[0] %></b></p>
                     </div>
                 <% } %>
-                <div class="row">
-                    
+                <div class="row">  
                     <% if(guestRequest.requestStatus.toString()[0] !== "R") {%>
                         <form action="/guestRequest/<%= guestRequest.id %>/reject" method="GET" class="col-2 offset-8" >
                             <button class="btn btn-danger d-inline col-12">Reject</button>
@@ -186,48 +188,56 @@
                             <p style="color: rgb(200, 0, 0)" class="btn col-12 d-inline ms-5">Rejected</p>
                         </div>
                     <% } %>
-                    
-                    <% if(guestRequest.requestStatus.toString()[4] !== "A") {%>
+                    <% if(guestRequest.requestStatus.toString()[4] === "A") {%>
                         <form action="/guestRequest/<%= guestRequest.id %>/approve" method="POST" class="col-2">
                             <button class="btn btn-success d-inline col-12">Approve</button>
                         </form>
                     <% } %>
-                    <% if(guestRequest.requestStatus.toString()[4] == "A") {%>
+                    <% if(guestRequest.requestStatus.toString()[4] !== "A") {%>
                         <div class="col-2">
                             <p style="color: rgb(0, 142, 2)" class="btn col-12 d-inline ms-5">Approved</p>
                         </div>
                     <% } %>
                 </div>
-            <% } %>
-            <% if(reqType == "GFD") {%>
-                <h2 class="mb-4"><u>Food Details For Guest Accommodation: </u></h2>
-                <% for(let gst of guest){%>
-                    <div class="row border m-2">
-                        <div class="mb-2 col-4 p-2">
-                            <p>Name : <b><%= gst.name %></b></p>
-                            <p>Arrival Date : <b><%= gst.arrivalDate.toString().split("00:00:00")[0] %></b></p>
-                            <p>Arrival Time : <b><%= gst.arrivalTime %></b></p>
-                            <p>Leaving Date : <b><%= gst.leavingDate.toString().split("00:00:00")[0] %></b></p>
-                        </div>
-                        <div class="col-4 p-2 border-start">
-                            <p class="mb-3">Food Type : <b><%= gst.vegNonVeg %></b></p>
-                            <p class="mb-3">
-                                Food Timings : <b>
-                                <% for(food of gst.foodTime){%>
-                                    <% if(food == 'B') {%>
-                                        Breakfast
-                                    <% } %>
-                                    <% if(food == 'L') {%>
-                                        Lunch
-                                    <% } %>
-                                    <% if(food == 'D') {%>
-                                        Dinner
-                                    <% } %>
-                                <% } %>  </b>
-                            </p>
-                        </div>
+        <% } %>
+        <% if(user.userType == "messWarden") {%>
+            <h2 class="mb-4"><u>Food Details For Guest Accommodation: </u></h2>
+            <% for(let gst of guest){%>
+            <div class="row border m-2">
+                <div class="mb-2 col-4 p-2">
+                    <p>Name : <b><%= gst.name %></b></p>
+                    <p>Arrival Date : <b><%= gst.arrivalDate.toString().split("00:00:00")[0] %></b></p>
+                    <p>Arrival Time : <b><%= gst.arrivalTime %></b></p>
+                    <p>Leaving Date : <b><%= gst.leavingDate.toString().split("00:00:00")[0] %></b></p>
+                </div>
+                <div class="col-4 p-2 border-start">
+                    <p class="mb-3">Food Type : <b><%= gst.vegNonVeg %></b></p>
+                    <p class="mb-3">
+                        Food Timings : <b>
+                        <% for(food of gst.foodTime){%>
+                            <% if(food == 'B') {%>
+                                Breakfast
+                            <% } %>
+                            <% if(food == 'L') {%>
+                                Lunch
+                            <% } %>
+                            <% if(food == 'D') {%>
+                                Dinner
+                            <% } %>
+                        <% } %>  </b>
+                    </p>
+                </div>
+                <% if(guestRequest.requestStatus.toString()[4] !== "A") {%>
+                    <form action="/guestRequest/<%= guestRequest.id %>/approve" method="POST" class="col-2">
+                        <button class="btn btn-success d-inline col-12">Approve</button>
+                    </form>
+                <% } %>
+                <% if(guestRequest.requestStatus.toString()[4] === "A") {%>
+                    <div class="col-2">
+                        <p style="color: rgb(0, 142, 2)" class="btn col-12 d-inline ms-5">Approved</p>
                     </div>
                 <% } %>
+            </div>
             <% } %>
         <% } %>
     </div>

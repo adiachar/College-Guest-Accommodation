@@ -23,10 +23,24 @@ router.route("/reject", isLoggedIn)
 .post(isLoggedIn, wrapAsync(controller.guestRequestReject));
 
 //Guest Request Letter for warden
-router.get("/:reqType", isLoggedIn, wrapAsync(controller.guestRequestLetterForWarden));
+router.get("/warden", isLoggedIn, wrapAsync(controller.guestRequestLetterForWarden));
 
-//Guest request Approve
-router.post("/approve", isLoggedIn, wrapAsync (controller.guestRequestApprove));
+//Guest request Approve for hod and messManager
+router.post("/approve", isLoggedIn,
+    wrapAsync(
+        (req, res) =>{
+            if(res.locals.user.userType == 'hod'){
+                return controller.guestRequestApproveHod(req, res);
+            }
+
+            if(res.locals.user.userType == 'warden'){
+                return controller.guestRequestAllocateRoom(req, res);
+            }
+        }
+    ));
+
+
+router.post("/approve/warden", isLoggedIn, wrapAsync(controller.guestRequestApproveWarden))
 
 //Guest Request Approve Principal
 router.post("/approve/principal", isLoggedIn, wrapAsync (controller.guestRequestApprovePrincipal));

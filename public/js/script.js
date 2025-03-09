@@ -21,6 +21,7 @@ for(req of request)
 
 let text = document.querySelector(".mite");
 let words = "Welcome To Mangalore Institute Of Technology And Engineering.";
+
 text.innerHTML = "";
 let i = 0;
 setInterval(() => {

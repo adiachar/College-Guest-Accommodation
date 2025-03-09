@@ -8,12 +8,21 @@ module.exports.guestRequestLetter = async (req, res) =>{
         let {guestRequest} = reqData;
         let {guest} = reqData;
         guestRequest = guestRequest[0];
-        query.getUserById(guestRequest.to_id)
+        let to_id;
+        if(res.locals.user.userType == "hod"){
+            to_id = "hod_id";
+        }else if(res.locals.user.userType == "principal"){
+            to_id = "principal_id";
+        }
+        query.getUserById(guestRequest[to_id])
         .then((toUser)=>{
             guestRequest.to = toUser;
             query.getUserByType('warden')
             .then((wardens)=>{
-                res.render("gstRqst/showRequestLetter.ejs", {guestRequest, guest, wardens});
+                query.getUserByType('messWarden')
+                .then((messWardens)=>{
+                    res.render("gstRqst/showRequestLetter.ejs", {guestRequest, guest, wardens, messWardens});
+                }).catch((err) =>{throw err});
             }).catch((err) =>{throw err});
         }).catch((err) => {throw err});
     }).catch((err) => {throw err});
@@ -58,28 +67,45 @@ module.exports.guestRequestDeleteForToId = async (req, res) => {
 }
 
 module.exports.guestRequestLetterForWarden = async (req, res) => {
-    let {reqId, reqType} = req.params;
+    let {reqId} = req.params;
     query.getGuestRequestsById(reqId)
     .then((reqData) =>{
         let {guestRequest} = reqData;
         let {guest} = reqData;
         guestRequest = guestRequest[0];
-        res.render("gstRqst/showRequestLetter.ejs", {guestRequest, guest, reqType});
+        res.render("gstRqst/showRequestLetter.ejs", {guestRequest, guest});
     }).catch((err) => {throw err});
 }
 
-module.exports.guestRequestApprove = async (req, res) =>{
+module.exports.guestRequestApproveHod = async (req, res) =>{
     let {reqId} = req.params;
-    let status = "";
-    let sendTo = "";
-    if(res.locals.user.userType == "hod"){
-        status = "AHNPNW";
-        sendTo = "principal";
-    }else if(res.locals.user.userType == "warden"){
-        status = "AHAPAW";
-        sendTo = "messWarden";
+    query.approveGuestRequestHod(reqId)
+    .then((result) => {
+        let confirmation = {};
+        confirmation.status = "successfull";
+        confirmation.message = "Request Status Approved";
+        res.render('confirmation.ejs', {confirmation});
+    }).catch((err) => {throw err});
+}
+
+module.exports.guestRequestAllocateRoom = async (req, res) =>{
+    let {reqId} = req.params;
+    if(res.locals.user.userType == 'warden'){
+        query.getGuestRequestsById(reqId)
+        .then((reqData) =>{
+            let {guestRequest} = reqData;
+            let {guest} = reqData;
+            guestRequest = guestRequest[0];
+            return res.render('wardenApproval.ejs', {guestRequest, guest});
+        }).catch((err) => {throw err});
     }
-    query.approveGuestRequest(reqId, sendTo, status)
+}
+
+module.exports.guestRequestApproveWarden = async (req, res) => {
+    let {reqId} = req.params;
+    let warden_id = res.locals.user.id;
+    console.log(req.body);
+    query.approveGuestRequestWarden(reqId, warden_id, req.body)
     .then((result) => {
         let confirmation = {};
         confirmation.status = "successfull";
@@ -134,6 +160,7 @@ module.exports.guestRequestApprovePrincipal = async(req, res) =>{
         confirmation.message = 'Request Status Approved';
         res.render("confirmation.ejs", {confirmation});
     }).catch((err) => {
+        console.log(err);
         throw new ExpressError(400, err);
     });
 }

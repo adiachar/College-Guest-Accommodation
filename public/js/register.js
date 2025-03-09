@@ -16,7 +16,6 @@ form.addEventListener("submit", (event) =>{
     }
 });
 
-
 let userType = document.getElementById("user_type");
 let department = document.getElementById("department");
 

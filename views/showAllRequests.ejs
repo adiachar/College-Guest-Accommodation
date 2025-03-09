@@ -1,22 +1,21 @@
 <% layout('layouts/boilerplate.ejs') %>
 
 <div class="showAllRequest-container col-11 p-2">
-    <% if(user.user_type != "warden") {%>
+    <% if(user.userType != "warden" && user.userType != "messWarden") {%>
         <% if(guestRequestData.length == 0) {%>
             <h5 class="align-text-center">No Request</h5>
         <% } %>
         <% for(let guestRequest of guestRequestData) {%>
-            
             <div class="row border-bottom border-black showAllRequestDetails m-2">
                 <h3 class="position-relative">Guest Request
-                    <% if(guestRequest.requestStatus.toString() == "AHNPNW" || guestRequest.requestStatus.toString() == "NHNPNW") {%>
+                    <% if((user.userType == 'hod' && guestRequest.requestStatus.toString() == "NHNPNW") || (user.userType == 'principal'&& guestRequest.requestStatus.toString() == "AHNPNW") || (user.userType == 'warden' && guestRequest.requestStatus.toString() == "AHAPNW")) {%>
                         <span class="position-absolute bottom-0 translate-middle p-2 bg-danger border border-light rounded-circle"
                         style="height: 5px; width: 5px; left: 15rem;">
                             <span class="visually-hidden">New alerts</span>
                         </span>
                     <% } %>
                 </h3>
-                <p class="req-date col-2 ms-2 p-1 ps-2"><%= guestRequest.requestDate.toString().split('00:00:00')[0] %></p>
+                <p class="req-date col-2 ms-2 p-1 ps-2"><%= guestRequest.createdDate.toString().split('00:00:00')[0] %></p>
                 <p class="req-from col-2 ms-2 p-1 ps-2">From: <%= guestRequest.name %></p>
                 <% if(guestRequest.requestStatus.toString()[0] == 'R') {%>
                     <p class="rejected p-1 col-2">Request Rejected</p>
@@ -35,27 +34,33 @@
             </div>
         <% } %>
     <% } %>
-    <% if(user.user_type == "warden") {%>
-        <% if(data.length == 0) {%>
+    <% if(user.userType == "warden" || user.userType == "messWarden") {%>
+        <% if(guestRequestData.length == 0) {%>
             <h5 class="align-text-center">No Request</h5>
         <% } %>
-        <% for(let dta of data) {%>
-            <div class="row border-bottom border-black showAllRequestDetails m-2">
-                <h4>Guest Request</h4>
-                <p class="req-date col-2 ms-2 p-1 ps-2"><%= dta.requestDate.toString().split('00:00:00')[0] %></p>
-                <p class="req-from col-2 ms-2 p-1 ps-2">From: Principal MITE</p>
-                <% if(dta.requestStatus == "AHAPAW") {%>
-                    <p class="accepted p-1 col-1">Approved</p>
+        <% if(guestRequestData.length != 0) {%>
+            <% for(let dta of guestRequestData) {%>
+                <% if(user.userType == "messWarden" && dta.requestStatus == "AHAPNW") {%>
+                    <h5 class="align-text-center">No Request</h5>
+                <% }else {%>
+                    <div class="row border-bottom border-black showAllRequestDetails m-2">
+                        <h4>Guest Request</h4>
+                        <p class="req-date col-2 ms-2 p-1 ps-2"><%= dta.createdDate.toString().split('00:00:00')[0] %></p>
+                        <p class="req-from col-2 ms-2 p-1 ps-2">From: Principal MITE</p>
+                        <% if(dta.requestStatus == "AHAPAW") {%>
+                            <p class="accepted p-1 col-1">Approved</p>
+                        <% } %>
+                        <% if(dta.requestStatus == "RW") {%>
+                            <p class="rejected p-1 col-1">Rejected</p>
+                        <% } %>
+                        <div class="row m-2 p-0">
+                            <form action="/guestRequest/<%= dta.id %>/warden" method="GET" class="p-0 col-2">
+                                <button class="btn col-12" style="background-color: rgb(61, 61, 209); color: white">View</button>
+                            </form>
+                        </div>
+                    </div>
                 <% } %>
-                <% if(dta.requestStatus == "RW") {%>
-                    <p class="rejected p-1 col-1">Rejected</p>
-                <% } %>
-                <div class="row m-2 p-0">
-                    <form action="/guestRequest/<%= dta.guestRequest_id %>/<%= dta.rqstType %>" method="GET" class="p-0 col-2">
-                        <button class="btn col-12" style="background-color: rgb(61, 61, 209); color: white">View</button>
-                    </form>
-                </div>
-            </div>
+            <% } %>
         <% } %>
     <% } %>
 </div>

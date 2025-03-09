@@ -20,23 +20,23 @@ module.exports.userRegister = async (req, res) => {
     }
 }
 
-module.exports.userLoginPage = (req, res) =>{
+module.exports.userLoginPage = (req, res) => {
     let userStatus = '';
     res.render("login.ejs", {userStatus});
 }
 
 module.exports.userLogin = async (req, res) => {
     let {email, password} = req.body;
-    query.userLogin(email, password)
+    query.userLogin(email,password)
     .then((user) => {
-    if(!user){
-        let userStatus = 'user Not found';
-        res.render('login.ejs', {userStatus});
-    }
-    else{
-        req.session.user = user;
-        req.session.nav = "home";
-        res.redirect("/home");
-    }
+        if(!user){
+            let userStatus = 'user Not found';
+            res.render('login.ejs', {userStatus});
+        }
+        else{
+            req.session.user = user;
+            req.session.nav = "home";
+            res.redirect("/home");
+        }
     }).catch((err) =>{throw err});
 }

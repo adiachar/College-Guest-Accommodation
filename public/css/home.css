@@ -18,7 +18,7 @@ body::-webkit-scrollbar{
     width: 0px;
 }
 
-/* .filter{
+.filter{
     position: fixed;
     top: 0;
     left: 0;
@@ -27,7 +27,7 @@ body::-webkit-scrollbar{
     background-color: rgba(0, 0, 0, 0.245);
     backdrop-filter: blur(2px);
     z-index: -1;
-} */
+}
 
 .caption{
     position: absolute;
@@ -40,7 +40,7 @@ body::-webkit-scrollbar{
     display: flex;
     flex-direction: column;
     font-size: 30px;
-    width: 40rem;
+    width: 40%;
 }
 
 .caption h4{
@@ -73,13 +73,11 @@ body::-webkit-scrollbar{
 
 nav{
     position: absolute;
-    height: 5rem;
+    padding: 1rem 2rem !important;
     top: 0px;
     width: 100%;
     display: flex;
-    justify-self: center;
-    justify-content: space-between !important;
-    align-items: center;
+    justify-content: space-between;
     flex-wrap: wrap;
     border-bottom: 1px solid rgba(255, 255, 255, 0.329);
     background-color: rgba(255, 255, 255, 0.038);
@@ -91,7 +89,6 @@ ul{
     display: flex;
     justify-content: space-between;
     cursor: pointer;
-    margin-top: 20px;
 }
 
 
@@ -108,9 +105,8 @@ li a{
     text-wrap: nowrap;
     padding: 10px;
     border-radius: 5px;
-    color: #ffffffcd !important;
-    font-size: 19px;
-    margin: 20px 10px 10px 10px;
+    color: #ffffffcd;
+    font-size: 1.1rem;
     font-weight: 400;
     transition-duration: 0.2s;
     transition-timing-function: linear;
@@ -234,7 +230,6 @@ footer{
 /* Show all request */
 .showAllRequest-container{
     margin-bottom: 10rem;
-    width: 50vw;
     background-color: rgba(255, 255, 255, 0.934);
     border-radius: 10px;
     padding: 20px;
@@ -277,7 +272,6 @@ footer{
 
 .rejected, .pending, .accepted{
     border-radius: 10px;
-    color: white;
     text-align: center;
 }
 
@@ -381,7 +375,37 @@ footer{
 }
 
 @media screen and (max-width: 600px) {
+    body{
+        background-size: 100%;
+        background-position: 0 20%;
+        background-repeat: no-repeat;
+    }
+
+    .caption{
+        top: 30rem;
+        width: 90%;
+        font-size: 1.3rem;
+        & h4{
+            font-size: 1.8rem;
+        }
+    }
+
     .inContainer{
         padding: 1rem;
-    };
+    }
+
+    nav{
+        padding: 0.5rem 1rem !important;
+    }
+
+    nav a{
+        font-size: 1rem;
+        padding: 0.2rem;
+        margin: 0.3rem 0.3rem;
+    }
+
+    .nav1{
+        flex-direction: column;
+    }
+
 }

@@ -8,7 +8,7 @@
         <% for(let guestRequest of guestRequestData) {%>
             <div class="row m-2 p-2 status-container">
                 <div class="row m-2 mb-0 p-0">
-                    <p class="req-date col-3 me-2 p-1 ps-2">Created on: <%= guestRequest.requestDate.toString().split('00:00:00')[0] %></p>
+                    <p class="req-date col-3 me-2 p-1 ps-2">Created on: <%= guestRequest.createdDate.toString().split('00:00:00')[0] %></p>
                 </div>
                 <% if(guestRequest.requestStatus !== "AHAPAW") {%>
                 <div class="row m-2 border col-12 p-2">

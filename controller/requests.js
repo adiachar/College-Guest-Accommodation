@@ -2,16 +2,12 @@ const query = require("../utility/allQuery");
 const ExpressError = require("../utility/ExpressError");
 
 module.exports.allRequests = async (req, res) =>{
-    if(res.locals.user.userType != 'warden'){
+    if(res.locals.user){
        query.getGuestRequestsByToId(res.locals.user.id, res.locals.user.userType)
         .then((guestRequestData) =>{
+            console.log(guestRequestData);
             res.render('showAllRequests.ejs', {guestRequestData});
-        }).catch( (err) => { throw err; }); 
-    }else{
-        query.getGuestRequestsForWarden(res.locals.user.id)
-        .then((data) => {
-            res.render("showAllRequests.ejs", {data});
-        }).catch((err) => { throw err; });
+        }).catch( (err) => { throw err; });
     }
 }
 

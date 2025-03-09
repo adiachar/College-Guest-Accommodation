@@ -47,9 +47,9 @@ class query{
         });
     }
 
-    async userRegister(name, email, user_type, department, password){
+    async userRegister(name, email, userType, department, password){
         let id = this.getRandomId();
-        let q = `INSERT INTO user VALUES ( '${id}', '${name}', '${email}', '${user_type}', '${department}', '${password}')`;
+        let q = `INSERT INTO user VALUES ( '${id}', '${name}', '${email}', '${userType}', '${department}', '${password}')`;
         return new Promise((resolve, reject) =>{
             connection.query(q, (err, result) =>{
                 if(err){
@@ -178,6 +178,10 @@ class query{
                 qReqCount = `SELECT COUNT(*) AS count from guestrequest WHERE requestStatus = "AHAPNW" AND warden_id = "${toid}";`
             }else if(userType == "coordinator"){
                 return resolve(0);
+            }else if(userType == "messWarden"){
+                qReqCount = `SELECT COUNT(*) AS count from guestrequest WHERE requestStatus = "AHAPAW" AND messWarden_id = "${toid}";`
+            }else{
+                return resolve(0);
             }
             if(qReqCount){
                 connection.query(qReqCount, (err, result) => {
@@ -292,34 +296,58 @@ class query{
         
     }
 
-    async approveGuestRequest(req_id, userType, sts){
+    async approveGuestRequestHod(req_id){
+        return new Promise((resolve, reject) => {
+            let hodApprovalDate = this.getDate();
+                this.getUserByType('principal')
+                .then((user) =>{
+                    if(user){
+                        let qApprove = `UPDATE guestrequest SET requestStatus = ?, principal_id = ?, hodApprovalDate = ? WHERE id = '${req_id}'`;
+                        let id = user[0].id;
+                        connection.query(qApprove, ['AHNPNW', id, hodApprovalDate], (err, result) => {
+                            if(err){
+                                reject(err);
+                            }
+                            else{
+                                resolve(result);
+                            }
+                        });
+                    }else{
+                        reject('User Not Found!');
+                    }
+            }).catch((err) => { throw err; });
+        });
+    }
+
+    async approveGuestRequestWarden(req_id, warden_id, roomData){
         return new Promise((resolve, reject) => {
             let approvalDate = this.getDate();
-            let qApprove = `UPDATE guestrequest SET requestStatus = ?, ${userType}_id = ?, approvalDate = ?, WHERE id = '${req_id}'`;
-                if(userType != "null"){
-                    this.getUserByType(userType)
-                    .then((user) =>{
-                        if(user){
-                            let id = user[0].id;
-                            connection.query(qApprove, [sts, id, approvalDate], (err, result) => {
-                                if(err){
-                                    reject(err);
-                                }
-                                else{
-                                    resolve(result);
-                                }
-                            });
-                        }else{
-                            reject('User Not Found!');
-                        }
-                }).catch((err) => { throw err; });
-            }else{ return reject("user type not defined in approveGuestRequest");}
+            let wardenApprovalQry = `UPDATE guestrequest SET requestStatus = ?, warden_id = ?, wardenApprovalDate = ? WHERE id = '${req_id}'`;
+            let values = ['AHAPAWNM', warden_id, approvalDate];
+            connection.query(wardenApprovalQry, values, (err, result) => {
+                if(err){
+                    return reject(err);
+                }
+                else{
+                    for(let key in roomData){
+                        let hostelAllocateQry = `INSERT INTO hostel(id, guest_id, allocatedDate, allocatedBy, roomNo, block) VALUES(?)`;
+                        let values = [this.getRandomId(), key, this.getDate(), warden_id, roomData[key].roomNo, roomData[key].block];
+                        connection.query(hostelAllocateQry, values, (err, result) => {
+                            if(err){
+                                return reject(err);
+                            }
+                        });
+                    }
+                    return resolve("success");
+                }
+            });
         });
     }
 
     async approveGuestRequestPrincipal(req_id, wardenId, messWardenId, pId){
         return new Promise((resolve, reject) => {
-            qApprove = `UPDATE guestrequest SET warden_id = '${wardenId}', messWarden_id = '${messWardenId}' WHERE id = '${req_id}'`;
+            let principalApprovalDate = this.getDate();
+            let qApprove = `UPDATE guestrequest SET warden_id = '${wardenId}', messWarden_id = '${messWardenId}', requestStatus = 'AHAPNW', principalApprovalDate = '${principalApprovalDate}' WHERE id = '${req_id}'`;
             connection.query(qApprove, (error, result) => {
                 if(error){
                     console.log("error in approveGuestRequestPrincipal query");
@@ -330,18 +358,6 @@ class query{
             });
         });
     }
-
-    async getGuestRequestsForWarden(userId){
-        return new Promise((resolve, reject) => {
-            this.getGuestRequestsByToId(userId, "warden")
-            .then((result) => {
-                resolve(result);
-            }).catch((error) => {
-                reject(error);
-            })
-        });
-    }
 }
-
 
 module.exports = new query(connection);
