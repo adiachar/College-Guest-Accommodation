@@ -15,7 +15,7 @@
                         </span>
                     <% } %>
                 </h3>
-                <p class="req-date col-2 ms-2 p-1 ps-2"><%= guestRequest.createdDate.toString().split('00:00:00')[0] %></p>
+                <p class="req-date col-2 ms-2 p-1 ps-2"><%= guestRequest.createdDate.toLocaleString('en-US', {day: '2-digit', month: 'long', year: 'numeric'}) %></p>
                 <p class="req-from col-2 ms-2 p-1 ps-2">From: <%= guestRequest.name %></p>
                 <% if(guestRequest.requestStatus.toString()[0] == 'R') {%>
                     <p class="rejected p-1 col-2">Request Rejected</p>
@@ -55,7 +55,7 @@
                                 </span>
                             <% } %>
                         </h3>
-                        <p class="req-date col-2 ms-2 p-1 ps-2"><%= guestRequest.createdDate.toString().split('00:00:00')[0] %></p>
+                        <p class="req-date col-2 ms-2 p-1 ps-2"><%= guestRequest.createdDate.toLocaleString('en-US', {day: '2-digit', month: 'long', year: 'numeric'}) %></p>
                         <p class="req-from col-2 ms-2 p-1 ps-2">From: Principal MITE</p>
                         <% if(guestRequest.requestStatus == "AHAPAW") {%>
                             <p class="accepted p-1 col-1">Approved</p>

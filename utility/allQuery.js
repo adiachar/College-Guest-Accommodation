@@ -14,11 +14,8 @@ class query{
     }
 
     getDate(){
-        let date = new Date();
-        let day = date.getDate();
-        let month = String(date.getMonth() + 1).padStart(2, "0");
-        let year = String(date.getFullYear());
-        return `${year}-${month}-${day}`;
+        let date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        return date;
     }
 
     async getUserById(id){   
@@ -155,7 +152,7 @@ class query{
             if(userType == "coordinator"){
                 userType = "creator";
             }
-            let qGuestRequest = `SELECT r.createdDate, r.id, r.requestStatus, u.name, u.userType, u.department FROM guestrequest r JOIN user u ON r.creator_id = u.id WHERE r.${userType}_id='${toId}'`;
+            let qGuestRequest = `SELECT r.createdDate, r.id, r.requestStatus, u.name, u.userType, u.department FROM guestrequest r JOIN user u ON r.creator_id = u.id WHERE r.${userType}_id='${toId}' ORDER BY r.createdDate DESC`;
             connection. query(qGuestRequest, (error, result) =>{
                 if(error){
                     console.log("error in getGuestRequestByToId");
@@ -171,15 +168,15 @@ class query{
         return new Promise((resolve, reject) => {
             let qReqCount = "";
             if(userType == "hod"){
-                qReqCount = `SELECT COUNT(*) AS count FROM guestrequest WHERE requestStatus = "NHNPNW" AND hod_id = "${toid}";`;
+                qReqCount = `SELECT COUNT(*) AS count FROM guestrequest WHERE requestStatus = "NHNPNWNM" AND hod_id = "${toid}";`;
             }else if(userType == "principal"){
-                qReqCount = `SELECT COUNT(*) AS count FROM guestrequest WHERE requestStatus = "AHNPNW" AND principal_id = "${toid}";`;
+                qReqCount = `SELECT COUNT(*) AS count FROM guestrequest WHERE requestStatus = "AHNPNWNM" AND principal_id = "${toid}";`;
             }else if(userType == "warden"){
-                qReqCount = `SELECT COUNT(*) AS count from guestrequest WHERE requestStatus = "AHAPNW" AND warden_id = "${toid}";`
+                qReqCount = `SELECT COUNT(*) AS count from guestrequest WHERE requestStatus = "AHAPNWNM" AND warden_id = "${toid}";`
             }else if(userType == "coordinator"){
                 return resolve(0);
             }else if(userType == "messManager"){
-                qReqCount = `SELECT COUNT(*) AS count from guestrequest WHERE requestStatus = "AHAPAW" AND messManager_id = "${toid}";`
+                qReqCount = `SELECT COUNT(*) AS count from guestrequest WHERE requestStatus = "AHAPAWNM" AND messManager_id = "${toid}";`
             }else{
                 return resolve(0);
             }
@@ -198,7 +195,7 @@ class query{
     
     async getGuestRequestsById(id){   
         return new Promise((resolve, reject) =>{
-            let qGuestRequest = `SELECT r.*, u.id AS fromId, u.name AS fromName, u.userType, u.department FROM guestrequest r JOIN user u ON r.creator_id = u.id WHERE r.id='${id}'`;
+            let qGuestRequest = `SELECT r.*, u.id AS fromId, u.name AS fromName, u.userType, u.department FROM guestrequest r JOIN user u ON r.creator_id = u.id WHERE r.id='${id}' ORDER BY r.createdDate DESC`;
             connection. query(qGuestRequest, (err, guestRequest) =>{
                 if(err){
                     console.log("error in getGuestRequestById query");
@@ -239,7 +236,7 @@ class query{
 
     async getGuestRequestsByCreatorId(id){   
         return new Promise((resolve, reject) =>{
-            let qGuestRequest = `SELECT * FROM guestrequest WHERE creator_id='${id}'`;
+            let qGuestRequest = `SELECT * FROM guestrequest WHERE creator_id='${id}' ORDER BY createdDate DESC`;
             connection. query(qGuestRequest, (err, guestRequest) =>{
                 if(err){
                     console.log("error in getGuestRequestByCreatorId query");

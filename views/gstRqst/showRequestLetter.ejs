@@ -34,7 +34,7 @@
                 </div>
             <% } %>
             <div class="date mb-5 row">
-                <h6><%= guestRequest.createdDate.toString().split("00:00:00")[0] %></h6>
+                <h6><%= guestRequest.createdDate.toLocaleString('en-US', {day: '2-digit', month: 'long', year: 'numeric'}) %></h6>
             </div>
             <div class="subject mb-5">
                 <h5 class="mb-3 d-inline">Subject :</h5><p class="d-inline ms-2" style="font-weight: 500; font-size: 17px; color: rgba(0, 0, 0, 0.864);">Request For Guest Accomodation In Our College</p>
@@ -47,9 +47,9 @@
                     <div class="row rounded border mb-3 p-2 m-1">
                         <p class="mb-2"><b><%= gst.name %></b> :</p> <p class="mb-3 col-10">&nbsp; &nbsp; &nbsp; &nbsp; <%= gst.guestInfo %></p>
                         <hr>
-                        <p class="mb-3">Arrival Date: <%= gst.arrivalDate.toString().split('00:00:00')[0] %></p>
+                        <p class="mb-3">Arrival Date: <%= gst.arrivalDate.toLocaleString('en-US', {day: '2-digit', month: 'long', year: 'numeric'}) %></p>
                         <p class="mb-3">Arrival Time: <%= gst.arrivalTime %></p>
-                        <p class="mb-3">Leaving Date: <%= gst.leavingDate.toString().split('00:00:00')[0] %></p>
+                        <p class="mb-3">Leaving Date: <%= gst.leavingDate.toLocaleString('en-US', {day: '2-digit', month: 'long', year: 'numeric'}) %></p>
                     </div>
                 <% } %>
             <% } %>
@@ -84,9 +84,9 @@
                             <div class="row rounded border mb-3 p-2 m-1">
                                 <p class="mb-2"><b><%= gst.name %></b> :</p> <p class="mb-3 col-10">&nbsp; &nbsp; &nbsp; &nbsp; <%= gst.guestInfo %></p>
                                 <hr>
-                                <p class="mb-3">Arrival Date: <%= gst.arrivalDate.toString().split('00:00:00')[0] %></p>
+                                <p class="mb-3">Arrival Date: <%= gst.arrivalDate.toLocaleString('en-US', {day: '2-digit', month: 'long', year: 'numeric'}) %></p>
                                 <p class="mb-3">Arrival Time: <%= gst.arrivalTime %></p>
-                                <p class="mb-3">Leaving Date: <%= gst.leavingDate.toString().split('00:00:00')[0] %></p>
+                                <p class="mb-3">Leaving Date: <%= gst.leavingDate.toLocaleString('en-US', {day: '2-digit', month: 'long', year: 'numeric'}) %></p>
                             </div>
                         <% } %>
                         <div class="row m-1 mt-5 align-items-center">
@@ -171,9 +171,9 @@
             <% for(let gst of guest){%>
                 <div class="row border mb-2">
                     <p>Name : <b><%= gst.name %></b></p>
-                    <p>Arrival Date : <b><%= gst.arrivalDate.toString().split("00:00:00")[0] %></b></p>
+                    <p>Arrival Date : <b><%= gst.arrivalDate.toLocaleString('en-US', {day: '2-digit', month: 'long', year: 'numeric'}) %></b></p>
                     <p>Arrival Time : <b><%= gst.arrivalTime %></b></p>
-                    <p>Leaving Date : <b><%= gst.leavingDate.toString().split("00:00:00")[0] %></b></p>
+                    <p>Leaving Date : <b><%= gst.leavingDate.toLocaleString('en-US', {day: '2-digit', month: 'long', year: 'numeric'}) %></b></p>
                 </div>
             <% } %>
             <div class="row">  
@@ -205,9 +205,9 @@
             <div class="row border m-2">
                 <div class="mb-2 col-4 p-2">
                     <p>Name : <b><%= gst.name %></b></p>
-                    <p>Arrival Date : <b><%= gst.arrivalDate.toString().split("00:00:00")[0] %></b></p>
+                    <p>Arrival Date : <b><%= gst.arrivalDate.toLocaleString('en-US', {day: '2-digit', month: 'long', year: 'numeric'}) %></b></p>
                     <p>Arrival Time : <b><%= gst.arrivalTime %></b></p>
-                    <p>Leaving Date : <b><%= gst.leavingDate.toString().split("00:00:00")[0] %></b></p>
+                    <p>Leaving Date : <b><%= gst.leavingDate.toLocaleString('en-US', {day: '2-digit', month: 'long', year: 'numeric'}) %></b></p>
                 </div>
                 <div class="col-4 p-2 border-start">
                     <p class="mb-3">Food Type : <b><%= gst.vegNonVeg %></b></p>
