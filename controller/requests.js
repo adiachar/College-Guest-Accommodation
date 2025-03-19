@@ -12,7 +12,7 @@ module.exports.allRequests = async (req, res) =>{
 }
 
 module.exports.allRequestsStatus = async (req, res) =>{
-    query.getGuestRequestsByCreatorId(res.locals.user.id)
+    query.getGuestRequestsByToId(res.locals.user.id, res.locals.user.userType)
     .then((guestRequestData)=>{
         res.render("showRequestStatus.ejs", {guestRequestData});
     });

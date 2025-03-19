@@ -1,5 +1,5 @@
 <% layout('./layouts/boilerplate') %>
-<div class="col-10 offset-0 border rounded p-5" style="background-color: white;">
+<div class="col-10 offset-0 border rounded p-5 bg-light">
     <h1>Room Allocation For Guest</h1>
     <form method="POST" action="/guestRequest/<%= guestRequest.id %>/approve/warden">
         <% for(let gst of guest) {%>

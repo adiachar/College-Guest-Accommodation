@@ -31,9 +31,19 @@
                     <p class="accepted p-1 col-2">Request Approved</p>
                 <% } %>
                 <div class="row m-2 p-0">
-                    <form action="/guestRequest/<%= guestRequest.id %>" method="GET" class="p-0 col-2">
+                    <form action="/guestRequest/<%= guestRequest.id %>" method="GET" class="p-0 col-2 m-2">
                         <button class="btn col-12" style="background-color: rgb(61, 61, 209); color: white">View</button>
                     </form>
+                    <% if(guestRequest.requestStatus == "AHAPAWAM") {%>
+                        <form action="/guestRequest/<%= guestRequest.id %>/report" method="GET" class="p-0 m-2 col-2">
+                            <button class="btn btn-success col-12">Show Report</button>
+                        </form>
+                    <% } %>
+                    <% if(guestRequest.requestStatus === 'AHAPAWAM') {%>
+                    <form action="/guestRequest/<%= guestRequest.id %>/delete?_method=DELETE" method="POST" class="p-0 m-2 col-2">
+                        <button class="btn btn-dark col-12">Delete for me</button>
+                    </form>
+                    <% } %>
                 </div>
             </div>
         <% } %>
@@ -45,7 +55,7 @@
             <% for(let guestRequest of guestRequestData) {%>
                 <% if(user.userType == "messManager" && guestRequest.requestStatus == "AHAPNWNM") {%>
                     <h5 class="align-text-center">No Request</h5>
-                <% } else{%>
+                <% } else {%>
                     <div class="row border-bottom border-black showAllRequestDetails m-2">
                         <h3 class="position-relative">Guest Request
                             <% if((user.userType == 'warden' && guestRequest.requestStatus.toString() == "AHAPNWNM") || (user.userType == 'messManager'&& guestRequest.requestStatus.toString() == "AHAPAWNM")) {%>
@@ -59,14 +69,25 @@
                         <p class="req-from col-2 ms-2 p-1 ps-2">From: Principal MITE</p>
                         <% if(guestRequest.requestStatus == "AHAPAW") {%>
                             <p class="accepted p-1 col-1">Approved</p>
-                        <% } %>
-                        <% if(guestRequest.requestStatus == "RW") {%>
+                        <% } else if(guestRequest.requestStatus.toString()[4] == 'N') {%>
+                            <p class="pending p-1 col-3">Warden Approval Pending...</p>
+                        <% } else if(guestRequest.requestStatus.toString()[6] == 'N') {%>
+                            <p class="pending p-1 col-3">Mess Manager Approval Pending...</p>
+                        <%} else if(guestRequest.requestStatus.toString()[0] == 'R') {%>
                             <p class="rejected p-1 col-1">Rejected</p>
                         <% } %>
                         <div class="row m-2 p-0">
-                            <form action="/guestRequest/<%= guestRequest.id %>/warden" method="GET" class="p-0 col-2">
+                            <form action="/guestRequest/<%= guestRequest.id %>/warden" method="GET" class="p-0 col-2 m-2">
                                 <button class="btn col-12" style="background-color: rgb(61, 61, 209); color: white">View</button>
                             </form>
+                            <% if(guestRequest.requestStatus == "AHAPAWAM") {%>
+                                <form action="/guestRequest/<%= guestRequest.id %>/report" method="GET" class="p-0 m-2 col-2">
+                                    <button class="btn btn-success col-12">Show Report</button>
+                                </form>
+                                <form action="/guestRequest/<%= guestRequest.id %>/delete?_method=DELETE" method="POST" class="p-0 m-2 col-2">
+                                    <button class="btn btn-dark col-12">Delete for me</button>
+                                </form>
+                            <% } %>
                         </div>
                     </div>
                 <% } %>

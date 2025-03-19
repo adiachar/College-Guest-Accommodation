@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/showRequestLetter.css">
 </head>
 <body>
-    <div class="letter col-11 shadow p-5 rounded">
+    <div class="letter col-11 shadow p-5 rounded bg-light">
         <% if(user.userType !== "warden" && user.userType !== "messManager") {%>
             <div class="from mb-3 row">
                 <h4>From :</h4>
@@ -16,7 +16,7 @@
                 <p class="mb-1"><%= guestRequest.userType.toString().toUpperCase() %> of <%= guestRequest.department.toString().toUpperCase() %> department</p>
                 <p class="m-0">Mangalore Institute Of Technology And Engineering <br> Moodbidre</p>
             </div>
-            <% if(guestRequest.to){%>
+            <% if(guestRequest.to && user.userType != 'coordinator'){%>
                 <div class="to mb-5 row">
                     <% if( guestRequest.to.userType != 'principal') { %>
                     <h4>To :</h4>
@@ -77,11 +77,11 @@
                 </div>
             <% } %>
             <% if(user.userType == 'principal') {%>
-                <form action="/guestRequest/<%= guestRequest.id %>/approve/principal" method="POST" class="m-1" id="acceptForm">
-                    <div class="guestInfo mb-5 m-1 row">
+                <form action="/guestRequest/<%= guestRequest.id %>/approve/principal" method="POST" class="m-0 col-12" id="acceptForm">
+                    <div class="guestInfo mb-5 m-1 col-12 border p-2">
                         <p class="mt-5 d-block" style="font-weight: 500; font-size: 20px; color: rgba(0, 0, 0, 0.864);">Guest Details :</p>
                         <% for( let gst of guest ) {%>
-                            <div class="row rounded border mb-3 p-2 m-1">
+                            <div class="rounded border mb-3 p-2 m-1">
                                 <p class="mb-2"><b><%= gst.name %></b> :</p> <p class="mb-3 col-10">&nbsp; &nbsp; &nbsp; &nbsp; <%= gst.guestInfo %></p>
                                 <hr>
                                 <p class="mb-3">Arrival Date: <%= gst.arrivalDate.toLocaleString('en-US', {day: '2-digit', month: 'long', year: 'numeric'}) %></p>
@@ -89,7 +89,7 @@
                                 <p class="mb-3">Leaving Date: <%= gst.leavingDate.toLocaleString('en-US', {day: '2-digit', month: 'long', year: 'numeric'}) %></p>
                             </div>
                         <% } %>
-                        <div class="row m-1 mt-5 align-items-center">
+                        <div class="row m-1 pt-4 pb-4 align-items-center" style="background-color: rgba(0, 0, 0, 0.09)">
                             <label for="warden" class="d-inline col-2">Send Guest Details To :</label>
                             <select name="wardenId1" id="warden" required class="form-control">
                                 <option value="" disabled selected >Select warden</option>
@@ -100,7 +100,7 @@
                         </div>
                     </div>
                     <hr>
-                    <div class=" guestFoodDetails row ">
+                    <div class=" guestFoodDetails mb-5 m-1 col-12 border p-2 ">
                         <p class="mt-5 d-block" style="font-weight: 500; font-size: 20px; color: rgba(0, 0, 0, 0.864);">Guest Food Details :</p>
                         <% for( let gst of guest ) {%>
                             <div class="row rounded border mb-3 p-2 m-1">
@@ -123,7 +123,7 @@
                                 </p>
                             </div>
                         <% } %>
-                        <div class="row m-1 mt-5 align-items-center">
+                        <div class="row m-1 pt-4 pb-4 align-items-center" style="background-color: rgba(0, 0, 0, 0.09)">
                             <label for="warden" class="d-inline col-2">Send Food Details To :</label>
                             <select name="wardenId2" id="warden" required class="form-control">
                                 <option value="" disabled selected >select warden</option>
@@ -189,7 +189,7 @@
                 <% } %>
                 <% if(guestRequest.requestStatus.toString()[4] !== "A") {%>
                     <form action="/guestRequest/<%= guestRequest.id %>/allocateRoom" method="POST" class="col-2">
-                        <button style="color: rgb(13, 13, 13); background-color: rgb(176, 176, 176);" class="btn d-inline col-12">Allocate Room</button>
+                        <button style="color: rgb(255, 255, 255); background-color: rgb(22, 125, 49);" class="btn d-inline col-12">Allocate Room</button>
                     </form>
                 <% } %>
                 <% if(guestRequest.requestStatus.toString()[4] === "A") {%>
@@ -229,8 +229,8 @@
             </div>
             <% } %>
             <% if(guestRequest.requestStatus.toString()[6] !== "A") {%>
-                <form action="/guestRequest/<%= guestRequest.id %>/approve/messManager" method="POST" class="col-12">
-                    <button class="btn btn-success d-block ">Approve</button>
+                <form action="/guestRequest/<%= guestRequest.id %>/approve/messManager" method="POST" class="col-12 m-2">
+                    <button class="btn btn-success col-3">Approve</button>
                 </form>
             <% } %>
             <% if(guestRequest.requestStatus.toString()[6] === "A") {%>

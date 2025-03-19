@@ -59,9 +59,11 @@
                     <form action="/guestRequest/<%= guestRequest.id %>" method="GET" class="p-0 col-2">
                         <button class="btn col-12" style="background-color: rgb(61, 61, 209); color: white">View</button>
                     </form>
-                    <form action="/guestRequest/<%= guestRequest.id %>/delete?_method=DELETE" method="POST" class="p-0 ms-2 col-2">
-                        <button class="btn btn-dark col-12">Delete</button>
-                    </form>
+                    <% if(guestRequest.requestStatus === 'AHAPAWAM') {%>
+                        <form action="/guestRequest/<%= guestRequest.id %>/delete?_method=DELETE" method="POST" class="p-0 ms-2 col-2">
+                            <button class="btn btn-dark col-12">Delete for me</button>
+                        </form>
+                    <% } %>
                 </div>           
             </div>
         <% } %>

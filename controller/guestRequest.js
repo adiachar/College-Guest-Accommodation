@@ -3,10 +3,12 @@ const ExpressError = require("../utility/ExpressError");
 
 module.exports.guestRequestLetter = async (req, res) =>{
     let{reqId} = req.params;
-    query.getGuestRequestsById(reqId)
+    let userType = res.locals.user.userType;
+    query.getGuestRequestsById(reqId, userType)
     .then((reqData) =>{
         let {guestRequest} = reqData;
         let {guest} = reqData;
+        console.log(guestRequest);
         guestRequest = guestRequest[0];
         let to_id;
         if(res.locals.user.userType == "hod"){
@@ -14,9 +16,10 @@ module.exports.guestRequestLetter = async (req, res) =>{
         }else if(res.locals.user.userType == "principal"){
             to_id = "principal_id";
         }
+        
         query.getUserById(guestRequest[to_id])
         .then((toUser)=>{
-            guestRequest.to = toUser;
+            guestRequest.to = res.locals.user;
             query.getUserByType('warden')
             .then((wardens)=>{
                 query.getUserByType('messManager')
@@ -32,13 +35,9 @@ module.exports.guestRequestDeleteForId = async (req, res)=>{
     let {reqId} = req.params;
     let userId = res.locals.user.id;
     let userType = res.locals.user.userType;
-    query.deleteGuestRequestForId(reqId, userId, userType)
+    query.deleteGuestRequestForId(reqId, userType)
     .then((result) => {
-        let confirmation = {};
-        confirmation.status = "successfull";
-        confirmation.message = result;
-        res.render('confirmation.ejs', {confirmation});
-        console.log("confirmation sent");
+        res.redirect("/requests/");
     }).catch((err) => {throw err;});
 }
 

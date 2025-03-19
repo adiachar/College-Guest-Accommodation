@@ -149,10 +149,12 @@ class query{
 
     async getGuestRequestsByToId(toId, userType){  
         return new Promise((resolve, reject) =>{
-            if(userType == "coordinator"){
+            let userCharacter = userType.toUpperCase()[0];
+            console.log(userCharacter);
+            if(userType == "coordinator") {
                 userType = "creator";
             }
-            let qGuestRequest = `SELECT r.createdDate, r.id, r.requestStatus, u.name, u.userType, u.department FROM guestrequest r JOIN user u ON r.creator_id = u.id WHERE r.${userType}_id='${toId}' ORDER BY r.createdDate DESC`;
+            let qGuestRequest = `SELECT r.createdDate, r.id, r.requestStatus, u.name, u.userType, u.department FROM guestrequest r JOIN user u ON r.${userType}_id = u.id WHERE r.${userType}_id='${toId}' AND r.visibility LIKE '%${userCharacter}%' ORDER BY r.createdDate DESC`;
             connection. query(qGuestRequest, (error, result) =>{
                 if(error){
                     console.log("error in getGuestRequestByToId");
@@ -217,23 +219,7 @@ class query{
         });
     }
 
-    async deleteGuestRequestForId(reqId, userId, userType){
-        if(userType == "coordinator"){
-            userType = "creator";
-        }
-        return new Promise((resolve, reject) => {
-            let qGuestRequest = `UPDATE guestrequest SET ${userType}_id = NULL WHERE ${userType}_id = '${userId}' AND id = '${reqId}';`;
-            connection.query(qGuestRequest, (err, result) => {
-                if(err){
-                    console.log("error in deleteGuestRequestById query");
-                    reject(err);
-                }else{
-                    resolve("request Deleted");
-                }
-            });
-        });
-    }
-
+    //delete if everything working fine
     async getGuestRequestsByCreatorId(id){   
         return new Promise((resolve, reject) =>{
             let qGuestRequest = `SELECT * FROM guestrequest WHERE creator_id='${id}' ORDER BY createdDate DESC`;
@@ -244,6 +230,22 @@ class query{
                 }
                 else{
                     return resolve(guestRequest);
+                }
+            });
+        });
+    }
+
+    async deleteGuestRequestForId(reqId, userType){
+        let userCharacter = userType.toUpperCase()[0];
+        console.log(userCharacter);
+        return new Promise((resolve, reject) => {
+            let qGuestRequest = `UPDATE guestrequest SET visibility = REPLACE(visibility, '${userCharacter}', '') WHERE id = '${reqId}';`;
+            connection.query(qGuestRequest, (err, result) => {
+                if(err){
+                    console.log("error in deleteGuestRequestById query");
+                    reject(err);
+                }else{
+                    resolve("request Deleted");
                 }
             });
         });
