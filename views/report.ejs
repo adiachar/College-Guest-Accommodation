@@ -4,46 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/report.css"/>
 </head>
 <body>
-    <div class="report">
-        <div class="header">
-            <span><img class="logo" src="/assets/mite-logo-org.png" alt="logo"></span>
-            <h2>Mangalore Institute of Technology & Engineering </h2>
-        </div>
-        <h3>Guest Accommodation Report</h3>
-        <div class="guestContainer">
-            <h4>Guest Details</h4>
-            <% for(let gst of guest) {%>
-                <div class="gst">
-                    <h5>Name: <%= gst.name %></h5>
-                    <div class="dtl">
-                        <p><%= gst.guestInfo %></p>
+    <% for(let gst of guest) {%>
+        <div class="report shadow border">
+            <div class="header">
+                <span class="me-2"><img class="logo" src="/assets/mite-logo.png" alt="logo"></span>
+                <div class="college pt-3">
+                    <h2 class="text-center">MANGALORE INSTITUTE OF TECHNOLOGY & ENGINEERING</h2>
+                    <p class="m-0">(A Unit of Rajalaxmi Education Trust, Mangalore)</p>
+                    <p class="m-0">Autonomous Institute Affialiated to VTU, Belagavi Approved by AICTE, New Delhi</p>
+                    <p class="m-0">Accredited by NAAC with A+ Grade & ISO 9001:2015 Certified Institution</p>
+                </div>
+            </div>
+            <h4 class="text-center mt-3 text-muted">Guest Accommodation Report</h4>
+            <div class="m-2">
+                <p class="subHeading text-center p-1">Guest Details</p>
+                <div class="col-12 p-1">
+                    <div class="pair d-flex">
+                        <p class="col-4 m-0">Name</p><p>:</p><p class="ms-3 m-0"><%= gst.name %></p>
                     </div>
-                    <div class="arrival-dtl">
-                        <p>Arrival Date: <%= gst.arrivalDate.toString().split('T')[0] %></p>
-                        <p>Arrial Time : <%= gst.arrivalTime %></p>
-                        <p>Leaving Date: <%= gst.leavingDate.toString().split('T')[0] %></p>
+                    <div class="m-0">
+                        <p class="m-0">Details &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+                            &nbsp;&nbsp;<%= gst.guestInfo %></p>
+                    </div>
+                    <div class="pair d-flex">
+                        <p class="col-4 m-0">Arrival Date</p><p>:</p><p class="ms-3 m-0"><%= gst.arrivalDate.toString().split(' ').slice(0, 4).join(" ") %></p>
+                    </div>
+                    <div class="pair d-flex">
+                        <p class="col-4 m-0">Dispatch Date</p><p>:</p><p class="ms-3 m-0"><%= gst.leavingDate.toString().split(' ').slice(0, 4).join(" ") %></p>
+                    </div>
+                    <div class="pair d-flex">
+                        <p class="col-4 m-0">Arrival Time</p><p>:</p><p class="ms-3 m-0"><%= gst.arrivalTime.toString().split(':').slice(0, 2).join(":")%></p>
+                    </div>
+                    <div class="pair d-flex">
+                        <p class="col-4 m-0">Food Type</p><p>:</p><p class="ms-3 m-0"><%= gst.vegNonVeg == "nonVeg" ? "Non-Vegitarian" : "Vegitarian"%></p>
                     </div>
                 </div>
-            <% } %>
+            </div>
+            <div class="m-2">
+                <p class="subHeading text-center p-1">Reason Of Arrival</p>
+                <div class="col-12 p-1">
+                    <div class="pair d-flex">
+                        <p><%= gst.name %></p>
+                    </div>
+                    <div class="col-12">
+                        <p><%= guestRequest.reasonOfArrival %></p>
+                    </div>
+                </div>
+            </div>
+            <div class="m-2">
+                <p class="subHeading text-center p-1">Approval Status</p>
+                <div class="col-12 p-1">
+                    <div class="pair d-flex justify-content-between">
+                        <p>Approved By HOD</p><p>Date: <%= guestRequest.hodApprovalDate.toString().split(' ').slice(0, 4).join(" ")%></p>
+                    </div>
+                    <div class="pair d-flex justify-content-between">
+                        <p>Approved By Principal</p><p>Date: <%= guestRequest.principalApprovalDate.toString().split(' ').slice(0, 4).join(" ")%></p>
+                    </div>
+                    <div class="pair d-flex justify-content-between">
+                        <p>Approved By Warden</p><p>Date: <%= guestRequest.wardenApprovalDate.toString().split(' ').slice(0, 4).join(" ")%></p>
+                    </div>
+                    <div class="pair d-flex justify-content-between">
+                        <p>Approved By Mess Manager</p><p>Date: <%= guestRequest.messManagerApprovalDate.toString().split(' ').slice(0, 4).join(" ")%></p>
+                    </div>
+                </div>
+            </div>
+            <div class="m-2">
+                <p class="subHeading text-center p-1">Allocated Room Details</p>
+                <div class="col-12 p-1">
+                    <div class="pair d-flex">
+                        <p>Hostel Block:</p><p><%= gst.hostel.block %></p>
+                    </div>
+                    <div class="pair d-flex">
+                        <p>Room No:</p><p><%= gst.hostel.roomNo%></p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="arrival-reason">
-            <p><%= guestRequest.reasonOfArrival %></p>
-        </div>
-
-        <div class="approval-status">
-            <% if(guestRequest.requestStatus == "AHAPAW"){%>
-            <p>Approved by: HOD </p>
-            <p>Approved by: Principal </p>
-            <p>Approved By: Wardon </p>
-            <% } %>
-        </div>   
-    </div>
-    <button onclick="downloadPdf()">DownloadPdf</button>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.3/html2canvas.min.js"></script>
-    <script src="/js/report.js"></script>
+        <button onclick="downloadPdf()" class="btn btn-dark m-3 mb-5">DownloadPdf</button>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.3/html2canvas.min.js"></script>
+        <script src="/js/report.js"></script>
+    <% } %>
 </body>
 </html>

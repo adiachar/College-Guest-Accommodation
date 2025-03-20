@@ -19,41 +19,41 @@ body{
 }
 
 .report{
-    border: 1px solid rgba(0, 0, 0, 0.656);
     width: 90vw;
     height: 841.89px;
     padding: 10px;
     font-size: 1em;
     max-width: 595.28px;
+    overflow: auto;
 }
-.report .header{
+
+.header{
     background-color: white;
-    color: orange;
     display: flex;
     justify-content: flex-start;
-    align-items: center;
     border-bottom: 1px solid rgba(0, 0, 0, 0.581);;
 }
 
+.header h2 {
+    font-size: 1.08rem;
+    color: rgb(237, 154, 0);
+}
+
+.header p {
+    font-size: 0.7rem;
+    text-align: center;
+}
+
 .report .logo{
-    height: 3rem;
-    width: 3rem;
+    height: 5.5rem;
+    width: 4rem;
     margin: 10px;
 }
 
-.report h2{
-    margin: 1rem auto;
-    text-align: center;
+.subHeading {
+    background-color: rgb(78, 200, 78);
 }
 
-.report h3{
-    text-align: center;
+.pair {
+    height: 1.5rem;
 }
-
-.arrival-dtl{
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-}
-

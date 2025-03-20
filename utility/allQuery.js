@@ -150,7 +150,6 @@ class query{
     async getGuestRequestsByToId(toId, userType){  
         return new Promise((resolve, reject) =>{
             let userCharacter = userType.toUpperCase()[0];
-            console.log(userCharacter);
             if(userType == "coordinator") {
                 userType = "creator";
             }
@@ -205,13 +204,27 @@ class query{
                 }
                 else{
                     let qGuest = `SELECT * FROM guest WHERE guestRequest_id='${id}'`;
-                    connection.query(qGuest, (err, guest)=>{
+                    connection.query(qGuest, async (err, guest)=>{
                         if(err){
                             console.log("error in guest query inside getGuestRequestById query");
                             return reject(err);
                         }
                         else{
-                            return resolve({guestRequest, guest});
+                            for(let gst of guest) {
+                                let qHostel = `SELECT * FROM hostel WHERE guest_id='${gst.id}'`;
+                                let hostel = await new Promise((resolve, rejected) => {
+                                    connection.query(qHostel, (err, hostel) => {
+                                        if(err) {
+                                            console.log("error in guest query inside getGuestRequestById query");
+                                            return reject(err);
+                                        } else {
+                                            resolve(hostel[0]);
+                                        }
+                                    });
+                                });
+                                gst.hostel = hostel;
+                            }
+                            return resolve({guestRequest, guest});    
                         }
                     });
                 }

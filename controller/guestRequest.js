@@ -8,7 +8,6 @@ module.exports.guestRequestLetter = async (req, res) =>{
     .then((reqData) =>{
         let {guestRequest} = reqData;
         let {guest} = reqData;
-        console.log(guestRequest);
         guestRequest = guestRequest[0];
         let to_id;
         if(res.locals.user.userType == "hod"){
@@ -46,7 +45,6 @@ module.exports.guestRequestReport = (req, res) => {
     query.getGuestRequestsById(reqId)
     .then(({guestRequest, guest}) => {
         guestRequest = guestRequest[0];
-        console.log({guestRequest, guest});
         res.render("report.ejs", {guestRequest, guest});
     });
 }

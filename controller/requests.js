@@ -5,7 +5,6 @@ module.exports.allRequests = async (req, res) =>{
     if(res.locals.user){
        query.getGuestRequestsByToId(res.locals.user.id, res.locals.user.userType)
         .then((guestRequestData) =>{
-            console.log(guestRequestData);
             res.render('showAllRequests.ejs', {guestRequestData});
         }).catch( (err) => { throw err; });
     }
